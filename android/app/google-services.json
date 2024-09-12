@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "426026973740",
+    "project_id": "alerthub2024",
+    "storage_bucket": "alerthub2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:426026973740:android:325879f77943c954eeaf89",
+        "android_client_info": {
+          "package_name": "alerthub.oti.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQGcEYRjJlEGo0d3Dusu_KNBljtZcGjj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

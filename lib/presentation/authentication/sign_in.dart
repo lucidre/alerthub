@@ -29,6 +29,8 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void saveForm() {
+    context.router.push(const MainRoute());
+    return;
     FocusScope.of(context).unfocus();
     final isValid = formKey.currentState?.validate();
 
@@ -62,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      enableInternetCheck: false,
+      enableInternetCheck: true,
       appBar: buildAppBar(),
       backgroundColor: context.backgroundColor,
       body: GestureDetector(
@@ -80,7 +82,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Text(
                   'Terms and Conditions of Use',
                   style: satoshi600S12,
-                ),
+                ).fadeIn(),
               ),
               verticalSpacer12,
             ],
@@ -105,13 +107,13 @@ class _SignInScreenState extends State<SignInScreen> {
               alignment: Alignment.centerRight,
               child: AppBtn.basic(
                 onPressed: () {
-                  // context.router.push(const ForgotPasswordRoute());
+                  context.router.push(const ForgotPasswordRoute());
                 },
                 isSecondary: context.$isDarkMode,
                 child: Text(
                   'Forgot password?',
                   style: satoshi600S12,
-                ),
+                ).fadeIn(),
               ),
             ),
             verticalSpacer16,
@@ -132,7 +134,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 horizontalSpacer12,
                 Expanded(child: context.divider),
               ],
-            ),
+            ).fadeInAndMoveFromBottom(),
             verticalSpacer16,
             AppBtn.from(
               onPressed: () {},

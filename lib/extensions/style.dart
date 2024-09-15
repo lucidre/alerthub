@@ -65,6 +65,7 @@ extension DeviceStyles on BuildContext {
       TextStyle? suffixStyle,
       TextStyle? counterStyle,
       TextStyle? floatingLabelStyle,
+      Color? fillColor,
       EdgeInsets? padding}) {
     final borderRadius = BorderRadius.circular(cornersSmall);
     final side = borderSide ??
@@ -93,7 +94,7 @@ extension DeviceStyles on BuildContext {
       floatingLabelStyle: floatingLabelStyle ?? satoshi500S14,
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
-      fillColor: whiteBrownBg1Color,
+      fillColor: fillColor ?? whiteBrownBg1Color,
       filled: true,
       icon: icon,
       contentPadding: padding ??

@@ -19,8 +19,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isHidden = true;
   bool isLoading = false;
 
-  List<String> accountTypes = ['Angola', 'Nigeria'];
-
   final fullNameController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final emailController = TextEditingController();
@@ -90,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      enableInternetCheck: false,
+      enableInternetCheck: true,
       appBar: buildAppBar(),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -131,7 +129,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  SimpleCheckbox buildTandCCheckbox() {
+  Widget buildTandCCheckbox() {
     return SimpleCheckbox(
       active: hasUserAgreed,
       isExpanded: true,
@@ -146,7 +144,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'I agree to the Terms and Conditions of Use',
         style: satoshi500S12,
       ),
-    );
+    ).fadeInAndMoveFromBottom();
   }
 
   Widget buildFullName() {

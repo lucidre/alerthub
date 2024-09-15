@@ -1,9 +1,6 @@
-/* // ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/presentation/authentication/tabs/forgot_password_tab_1.dart';
-import 'package:alerthub/presentation/authentication/tabs/forgot_password_tab_2.dart';
-import 'package:alerthub/presentation/authentication/tabs/forgot_password_tab_3.dart';
 
 @RoutePage()
 class ForgotPasswordScreen extends StatefulWidget {
@@ -14,119 +11,152 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  int index = 0;
-  String? emailOrPhone;
-  String? token;
+  bool isHidden = true;
+  bool isLoading = false;
+
+  final emailController = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void saveForm() {
+    FocusScope.of(context).unfocus();
+    final isValid = formKey.currentState?.validate();
+
+    if ((isValid ?? false) == false || isLoading) {
+      return;
+    }
+
+    formKey.currentState?.save();
+    showLoginStatus();
+  }
+
+  Future showLoginStatus() async {
+    // final email = emailController.text.trim();
+    // final password = passwordController.text.trim();
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      //
+    } catch (exception) {
+      context.showErrorSnackBar(exception.toString());
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      enableInternetCheck: false,
+      enableInternetCheck: true,
       appBar: buildAppBar(),
-      backgroundColor: neutral50,
-      body: buildBody(),
-    );
-  }
-
-  Padding buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(kDefaultPadding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      backgroundColor: context.backgroundColor,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.all(space12),
+          child: Column(
             children: [
-              buildHeaderCircle(1),
-              horizontalSpacer8,
-              buildHeaderSpacer(2),
-              horizontalSpacer8,
-              buildHeaderCircle(2),
-              horizontalSpacer8,
-              buildHeaderSpacer(3),
-              horizontalSpacer8,
-              buildHeaderCircle(3),
+              Expanded(child: buildBody()),
+              verticalSpacer12,
+              AppBtn.basic(
+                onPressed: () {
+                  // context.router.push(const ForgotPasswordRoute());
+                },
+                child: Text(
+                  'Terms and Conditions of Use',
+                  style: satoshi600S12,
+                ).fadeIn(),
+              ),
+              verticalSpacer12,
             ],
           ),
-          verticalSpacer16,
-          Expanded(
-              child: AnimatedSwitcher(
-            duration: medDuration,
-            child: index == 0
-                ? ForgotPasswordTab1(onNext: (emailOrPhone) {
-                    setState(() {
-                      this.emailOrPhone = emailOrPhone;
-                      index = 1;
-                    });
-                  })
-                : index == 1
-                    ? ForgotPasswordTab2(
-                        text: emailOrPhone ?? '',
-                        onNext: (token) {
-                          setState(() {
-                            this.token = token;
-                            index = 2;
-                          });
-                        })
-                    : index == 2
-                        ? ForgotPasswordTab3(text: emailOrPhone ?? '')
-                        : const SizedBox(),
-          ))
-        ],
-      ),
-    );
-  }
-
-  Widget buildHeaderCircle(int number) {
-    bool isCurrent = index == (number - 1);
-    bool isPast = index > (number - 1);
-    return AnimatedContainer(
-      duration: fastDuration,
-      padding: const EdgeInsets.all(space12),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isPast ? neutral900 : Colors.transparent,
-        border: Border.all(
-          width: isCurrent || isPast ? 2 : 1,
-          color: isCurrent || isPast ? neutral900 : neutral300,
-        ),
-      ),
-      child: Text(
-        number.toString(),
-        style: satoshi500S12.copyWith(
-          color: isPast
-              ? shadeWhite
-              : isCurrent
-                  ? neutral800
-                  : neutral500,
         ),
       ),
     );
   }
 
-  Widget buildHeaderSpacer(int number) {
-    bool isPast = index >= (number - 1);
-    return Expanded(
-      child: AnimatedContainer(
-        duration: fastDuration,
-        height: space4,
-        padding: const EdgeInsets.all(space12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: isPast ? neutral900 : neutral200,
+  Form buildBody() {
+    return Form(
+      key: formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Transform.scale(
+                scale: 1.2,
+                child: Lottie.asset(
+                  lockLottie,
+                  animate: true,
+                  repeat: true,
+                  reverse: true,
+                  width: 250,
+                  height: 250,
+                  fit: BoxFit.contain,
+                ),
+              ).fadeInAndMoveFromBottom(),
+            ),
+            verticalSpacer16,
+            Text('Forgot Password', style: satoshi600S24)
+                .fadeInAndMoveFromBottom(),
+            Text(
+              'Enter the email associated with your account to recover your account.',
+              style: satoshi500S14,
+            ).fadeInAndMoveFromBottom(),
+            verticalSpacer16,
+            ...buildEmail(),
+            verticalSpacer16,
+            AppBtn.from(
+              onPressed: saveForm,
+              isLoading: isLoading,
+              text: 'Continue',
+            ),
+            verticalSpacer32,
+          ],
         ),
       ),
     );
+  }
+
+  List<Widget> buildEmail() {
+    return [
+      Text('Email', style: satoshi500S12).fadeInAndMoveFromBottom(),
+      verticalSpacer8,
+      TextFormField(
+        textInputAction: TextInputAction.done,
+        decoration: context.inputDecoration(hintText: "Enter email"),
+        keyboardType: TextInputType.text,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return "Please provide your email.";
+          } else if (!$appUtil.isEmailValid(value.trim())) {
+            return 'Please enter a valid email';
+          }
+          return null;
+        },
+        controller: emailController,
+      ).fadeInAndMoveFromBottom(),
+    ];
   }
 
   AppBar buildAppBar() {
     return AppBar(
-      centerTitle: false,
       forceMaterialTransparency: true,
-      title: Text('Forgot password?', style: satoshi500S24).fadeIn(),
-      leading: const BackButton(color: neutral800),
+      leading: BackButton(color: context.textColor),
       elevation: 0,
-      backgroundColor: neutral50,
+      centerTitle: false,
+      backgroundColor: context.backgroundColor,
     );
   }
 }
- */

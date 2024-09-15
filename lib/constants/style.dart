@@ -105,6 +105,13 @@ TextStyle satoshi600S14 = const TextStyle(
   letterSpacing: 0,
   fontFamily: fontFamily,
 );
+TextStyle satoshi600S20 = const TextStyle(
+  fontSize: 20,
+  color: neutral600,
+  fontWeight: FontWeight.w600,
+  letterSpacing: 0,
+  fontFamily: fontFamily,
+);
 TextStyle satoshi600S1 = const TextStyle(
   fontSize: 12,
   color: blackShade1Color,

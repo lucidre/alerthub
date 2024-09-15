@@ -221,7 +221,9 @@ class AppBtn extends StatelessWidget {
       label: semanticLabel,
       button: true,
       container: true,
-      child: ExcludeSemantics(child: button.fadeIn()),
+      child: ExcludeSemantics(
+        child: button.fadeIn(),
+      ),
     );
   }
 }

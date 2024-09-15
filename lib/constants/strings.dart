@@ -67,3 +67,4 @@ const String transporterAssigned = 'assets/images/transporter_assigned.png';
 
 const String errorLottie = 'assets/lottie/error.json';
 const String noDataLottie = 'assets/lottie/no_data.json';
+const String lockLottie = 'assets/lottie/lock.json';

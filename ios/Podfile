@@ -1,4 +1,4 @@
-platform :ios, '13.0'
+platform :ios, '14.0'
 
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
@@ -38,14 +38,12 @@ target 'Runner' do
 end
  
 
-
-
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     
       target.build_configurations.each do |config|
         if Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']) < Gem::Version.new('13.0')
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
         end
         xcconfig_path = config.base_configuration_reference.real_path
         xcconfig = File.read(xcconfig_path)
@@ -54,4 +52,4 @@ post_install do |installer|
       end
     flutter_additional_ios_build_settings(target)
   end
-end
+end   

@@ -1,4 +1,7 @@
-import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/common_libs.dart' hide Marker;
+import 'package:alerthub/presentation/event/map_event_item.dart';
+import 'package:async/async.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 @RoutePage()
 class MapViewScreen extends StatefulWidget {
@@ -9,39 +12,127 @@ class MapViewScreen extends StatefulWidget {
 }
 
 class _MapViewScreenState extends State<MapViewScreen> {
+  CancelableOperation<bool>? cancelableFuture;
+  final oneSecond = const Duration(seconds: 1);
+  final initialCamera = const CameraPosition(zoom: 0, target: LatLng(-1, -1));
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      final controller = Get.find<MapController>();
+      controller.getLocationUpdate();
+    });
+  }
+
+  getData() async {
+    final controller = Get.find<MapController>();
+
+    if (controller.currentPosition == null) {
+      Future.delayed(oneSecond, () => getData());
+      return;
+    }
+
+    try {
+      /*     final data = await $networkUtil.getEventMap(
+        radius: radius,
+        latitude: currentPosition!.latitude,
+        longitude: currentPosition!.longitude,
+      );
+
+      final events = data.data?.events ?? [];
+
+      for (final event in events) {
+        final controller = Get.find<MapController>();
+        controller.addMapEvent(event);
+      } */
+    } catch (exception) {
+      context.showErrorSnackBar('An error occurred with fetching the events.');
+      Future.delayed(
+        const Duration(seconds: 2),
+        () => getData(),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: buildAppBar(),
       enableInternetCheck: false,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          border: Border.all(color: neutral200),
-          color: shadeWhite,
-          borderRadius: BorderRadius.circular(cornersSmall),
-        ),
-        child: InkWell(
-          onTap: () {
-            context.showBottomBar(
-              child: const MapEventItem(),
-              ignoreBg: true,
-              ignoreHeight: true,
-            );
-          },
-          child: Image.asset(
-            'assets/images/map.jpeg',
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
+      body: buildBody().fadeIn(),
     );
   }
 
-  AppBar buildAppBar() {
+  Widget buildBody() {
+    return GetX<MapController>(builder: (controller) {
+      final homePosition = controller.userPosition;
+      final events = controller.event;
+
+      return GoogleMap(
+        mapType: MapType.normal,
+        rotateGesturesEnabled: false,
+        tiltGesturesEnabled: false,
+        zoomGesturesEnabled: true,
+        zoomControlsEnabled: true,
+        onCameraMove: (cameraPosition) =>
+            updateCameraPosition(controller, cameraPosition),
+        initialCameraPosition: initialCamera,
+        onMapCreated: (data) => controller.setMapController(data),
+        myLocationEnabled: true,
+        markers: {
+          if (homePosition != null)
+            Marker(
+              onTap: () => context
+                  .showInformationSnackBar('This is your current location.'),
+              markerId: const MarkerId('currentLocation'),
+              position: homePosition,
+            ),
+          ...events.map((event) {
+            return Marker(
+                markerId: MarkerId(event.toString()),
+                position: const LatLng(0, 0),
+                onTap: () {
+                  context.showBottomBar(
+                    child: const MapEventItem(),
+                    ignoreBg: true,
+                    ignoreHeight: true,
+                  );
+                });
+          }),
+        },
+      );
+    });
+  }
+
+  updateCameraPosition(
+    MapController controller,
+    CameraPosition cameraPosition,
+  ) async {
+    if (!controller.considerChangingCenterPosition) return;
+
+    try {
+      cancelableFuture?.cancel();
+
+      //ensures the method calls the endpoint only when the user has stopped dragging the map.
+      cancelableFuture = CancelableOperation.fromFuture(() async {
+        await Future.delayed(oneSecond, () => true);
+        return true;
+      }());
+
+      final fetchUpdatedData = await cancelableFuture?.value ?? false;
+
+      if (fetchUpdatedData) {
+        final shouldGetData =
+            controller.shouldUpdateCurrentPosition(cameraPosition.target);
+        if (shouldGetData) {
+          getData();
+        }
+      }
+    } catch (_) {}
+  }
+
+  buildAppBar() {
     return AppBar(
       forceMaterialTransparency: true,
       leading: BackButton(color: context.textColor),
@@ -49,247 +140,6 @@ class _MapViewScreenState extends State<MapViewScreen> {
       centerTitle: false,
       backgroundColor: context.backgroundColor,
       title: Text('Live Event', style: satoshi600S24).fadeIn(),
-    );
-  }
-}
-
-class MapEventItem extends StatelessWidget {
-  const MapEventItem({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(space12),
-      margin: const EdgeInsets.only(
-        left: space12,
-        right: space12,
-        bottom: space32 + space12,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: neutral200),
-        color: context.backgroundColor,
-        borderRadius: BorderRadius.circular(cornersSmall),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          buildFirstSection(),
-          verticalSpacer12,
-          buildSecondSection(context),
-          verticalSpacer12,
-          AppBtn.from(
-            onPressed: () {
-              context.router.push(const EventDetailsRoute());
-            },
-            text: 'View Event',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container buildSecondSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(space12),
-      decoration: BoxDecoration(
-        border: Border.all(color: neutral200),
-        color: whiteColor,
-        borderRadius: BorderRadius.circular(cornersSmall),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(loremIspidiumTitle, style: satoshi600S14)
-              .fadeInAndMoveFromBottom(delay: slowDuration),
-          verticalSpacer12,
-          context.divider,
-          verticalSpacer12,
-          Text(
-            loremIspidiumMassive,
-            style: satoshi500S12,
-            maxLines: 5,
-            overflow: TextOverflow.ellipsis,
-          ).fadeInAndMoveFromBottom(delay: slowDuration),
-          verticalSpacer12,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Location",
-                style: satoshi600S12,
-              ),
-              horizontalSpacer12,
-              Expanded(
-                child: Text(
-                  loremIspidiumTitle,
-                  style: satoshi500S12,
-                  textAlign: TextAlign.end,
-                ),
-              ),
-            ],
-          ).fadeInAndMoveFromBottom(delay: slowDuration),
-          verticalSpacer12,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Timeline",
-                style: satoshi600S12,
-              ),
-              horizontalSpacer12,
-              Expanded(
-                child: Text(
-                  "24 hours",
-                  style: satoshi500S12,
-                  textAlign: TextAlign.end,
-                ),
-              ),
-            ],
-          ).fadeInAndMoveFromBottom(delay: slowDuration),
-          verticalSpacer12,
-          Row(
-            children: [
-              Text(
-                "Community Validification",
-                style: satoshi600S12,
-              ),
-              horizontalSpacer12,
-              const Spacer(),
-              const Icon(
-                Icons.thumb_up_alt_rounded,
-                color: primary800,
-                size: 14,
-              ),
-              horizontalSpacer4,
-              Text(
-                '(20)',
-                style: satoshi500S12.copyWith(color: primary800),
-              ),
-              horizontalSpacer8,
-              const Icon(
-                Icons.thumb_down_alt_rounded,
-                color: destructive700,
-                size: 14,
-              ),
-              horizontalSpacer4,
-              Text(
-                '(15)',
-                style: satoshi500S12.copyWith(color: destructive700),
-              ),
-            ],
-          ).fadeInAndMoveFromBottom(delay: slowDuration),
-        ],
-      ),
-    );
-  }
-
-  Container buildFirstSection() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: neutral300),
-        color: whiteColor,
-        borderRadius: BorderRadius.circular(cornersSmall),
-      ),
-      child: AspectRatio(
-        aspectRatio: 2,
-        child: Stack(
-          children: [
-            buildImage().fadeIn(delay: slowDuration),
-            Positioned(
-              right: space6,
-              top: space6,
-              child: buildPriority().fadeIn(delay: slowDuration),
-            ),
-            Positioned(
-              right: space6,
-              left: space6,
-              bottom: space6,
-              child: buildIndicator().fadeIn(delay: slowDuration),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Container buildImage() {
-    return Container(
-      decoration: BoxDecoration(
-        color: blackColor.withOpacity(.1),
-        borderRadius: BorderRadius.circular(space4),
-        border: Border.all(color: neutral200),
-      ),
-    );
-  }
-
-  Container buildPriority() {
-    return Container(
-      padding: const EdgeInsets.all(space6),
-      decoration: BoxDecoration(
-        color: destructive100,
-        borderRadius: BorderRadius.circular(space4),
-        border: Border.all(color: destructive300),
-      ),
-      child: Text(
-        'HIGH PRIORITY',
-        style: satoshi600S12.copyWith(color: destructive600),
-      ),
-    );
-  }
-
-  Center buildIndicator() {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 50,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.8),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

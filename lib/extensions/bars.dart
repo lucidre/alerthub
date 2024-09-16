@@ -183,6 +183,32 @@ extension DeviceBar on BuildContext {
     );
   }
 
+  Widget buildLoadingWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        verticalSpacer8,
+        Transform.scale(
+          scale: 1.2,
+          child: Lottie.asset(
+            "loadingLottie",
+            animate: true,
+            repeat: true,
+            reverse: true,
+            width: 250,
+            height: 250,
+            fit: BoxFit.contain,
+          ),
+        ),
+        Text(
+          'Fetching data, please wait.',
+          style: satoshi500S14,
+        ).fadeInAndMoveFromBottom(),
+      ],
+    );
+  }
+
   Widget buildErrorWidget(
       {String? title,
       String? body,

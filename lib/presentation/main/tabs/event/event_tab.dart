@@ -1,5 +1,4 @@
 import 'package:alerthub/common_libs.dart';
-import 'package:flutter/cupertino.dart';
 
 class EventTab extends StatefulWidget {
   const EventTab({super.key});
@@ -271,9 +270,14 @@ class _EventTabState extends State<EventTab> {
             children: [
               Text('Live View', style: satoshi600S14),
               const Spacer(),
-              const Icon(
-                Icons.open_in_new_rounded,
-                size: 18,
+              InkWell(
+                onTap: () {
+                  context.router.push(const MapViewRoute());
+                },
+                child: const Icon(
+                  Icons.open_in_new_rounded,
+                  size: 18,
+                ),
               )
             ],
           ),

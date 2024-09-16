@@ -71,15 +71,19 @@ class _MainScreenState extends State<MainScreen> {
         builder: (context, value, _) {
           return Transform.translate(
             offset: Offset(0, (1 - value) * 15),
-            child: Opacity(
-              opacity: value > .5 ? 1 : value,
-              child: FloatingActionButton(
-                onPressed: () => context.router.push(const CreateEventRoute()),
-                backgroundColor: blackShade1Color,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(space4),
+            child: IgnorePointer(
+              ignoring: index == 2,
+              child: Opacity(
+                opacity: value > .5 ? 1 : value,
+                child: FloatingActionButton(
+                  onPressed: () =>
+                      context.router.push(const CreateEventRoute()),
+                  backgroundColor: blackShade1Color,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(space4),
+                  ),
+                  child: const Icon(Icons.add_rounded),
                 ),
-                child: const Icon(Icons.add_rounded),
               ),
             ),
           );

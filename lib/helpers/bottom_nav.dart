@@ -12,7 +12,6 @@ class BottomNavBar extends StatelessWidget {
     this.currentIndex = 0,
     this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(

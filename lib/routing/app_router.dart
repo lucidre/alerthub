@@ -19,5 +19,6 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: SettingsRoute.page),
         AutoRoute(page: EditProfileRoute.page),
         AutoRoute(page: EventDetailsRoute.page),
+        AutoRoute(page: MapViewRoute.page),
       ];
 }

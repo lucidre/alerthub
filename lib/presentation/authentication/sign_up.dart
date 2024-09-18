@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:alerthub/api/firebase_util.dart';
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/helpers/select_country.dart';
 import 'package:country_picker/country_picker.dart';
@@ -50,18 +51,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void saveForm() {
     FocusScope.of(context).unfocus();
-    final isValid = formKey.currentState?.validate();
 
-    if ((isValid ?? false) == false || isLoading) {
-      if ((isValid ?? false) == false) {
-        context.showErrorSnackBar("Kindly fill all fields to proceed.");
-      }
+    if (isLoading) {
+      return;
+    }
 
+    final isValid = formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      context.showErrorSnackBar("Kindly fill all fields to proceed.");
       return;
     }
 
     if (selectedCountry == null) {
-      context.showErrorSnackBar('Kindly select an account type to proceed.');
+      context.showErrorSnackBar('Kindly select your country to proceed.');
+      return;
+    }
+    if (!hasUserAgreed) {
+      context.showErrorSnackBar('Kindly agree to the T and C to proceed.');
       return;
     }
 
@@ -75,7 +81,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
 
     try {
-      //
+      final fullName = fullNameController.text.trim();
+      final email = emailController.text.trim();
+      final phoneNumber = phoneNumberController.text.trim();
+      final country = selectedCountry?.name ?? '';
+      final password = passwordController.text.trim();
+
+      await $firebaseUtil.register(
+        fullName: fullName,
+        email: email,
+        phoneNumber: phoneNumber,
+        country: country,
+        password: password,
+      );
+      context.showInformationSnackBar(
+          'Account created successfully. Kindly verify your account and login.');
+      context.router.replace(const SignInRoute());
     } catch (exception) {
       context.showErrorSnackBar(exception.toString());
     }
@@ -88,41 +109,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      enableInternetCheck: true,
       appBar: buildAppBar(),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(space12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildFullName(),
-                  verticalSpacer12,
-                  ...buildEmail(),
-                  verticalSpacer12,
-                  ...buildPhoneNumber(),
-                  verticalSpacer12,
-                  ...buildCountry(),
-                  verticalSpacer12,
-                  ...buildPassword(),
-                  verticalSpacer12,
-                  ...buildConfirmPassword(),
-                  verticalSpacer12,
-                  buildTandCCheckbox(),
-                  verticalSpacer12,
-                  AppBtn.from(
-                      onPressed: saveForm,
-                      isLoading: isLoading,
-                      isSecondary: context.$isDarkMode,
-                      text: 'Contine'),
-                  verticalSpacer32,
-                ],
-              ),
-            ),
+        child: builBody(),
+      ),
+    );
+  }
+
+  Form builBody() {
+    return Form(
+      key: formKey,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(space12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildFullName(),
+              verticalSpacer12,
+              ...buildEmail(),
+              verticalSpacer12,
+              ...buildPhoneNumber(),
+              verticalSpacer12,
+              ...buildCountry(),
+              verticalSpacer12,
+              ...buildPassword(),
+              verticalSpacer12,
+              ...buildConfirmPassword(),
+              verticalSpacer12,
+              buildTandCCheckbox(),
+              verticalSpacer12,
+              AppBtn.from(
+                  onPressed: () => saveForm(),
+                  isLoading: isLoading,
+                  text: 'Contine'),
+              verticalSpacer32,
+            ],
           ),
         ),
       ),
@@ -163,9 +186,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           keyboardType: TextInputType.name,
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
-              return "Please provide your first name.";
-            } else if (!$appUtil.isNameValid(value.trim())) {
-              return 'Please enter a valid name';
+              return "Please provide your full name.";
             }
 
             return null;

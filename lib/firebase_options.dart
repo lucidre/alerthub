@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBQGcEYRjJlEGo0d3Dusu_KNBljtZcGjj4',
-    appId: '1:426026973740:android:325879f77943c954eeaf89',
+    appId: '1:426026973740:android:f022f880562a1835eeaf89',
     messagingSenderId: '426026973740',
     projectId: 'alerthub2024',
     storageBucket: 'alerthub2024.appspot.com',

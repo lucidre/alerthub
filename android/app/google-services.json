@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:426026973740:android:325879f77943c954eeaf89",
+        "mobilesdk_app_id": "1:426026973740:android:f022f880562a1835eeaf89",
         "android_client_info": {
-          "package_name": "alerthub.oti.app"
+          "package_name": "com.example.alerthub"
         }
       },
       "oauth_client": [],

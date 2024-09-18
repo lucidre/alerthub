@@ -2,11 +2,9 @@
 
 import 'dart:io';
 
- 
 import 'package:alerthub/common_libs.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
- 
 
 AppUtils $appUtil = AppUtils();
 
@@ -186,9 +184,6 @@ class AppUtils {
     }
   }
 
- 
- 
-
   Future<void> requestLocation() async {
     try {
       bool serviceEnabled;
@@ -214,7 +209,6 @@ class AppUtils {
       return Future.error(exception.toString());
     }
   }
- 
 
   int getFileQuality(File file, [int maxSize = 150]) {
     int fileSize = file.lengthSync();

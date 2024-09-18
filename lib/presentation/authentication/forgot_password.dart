@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:alerthub/api/firebase_util.dart';
 import 'package:alerthub/common_libs.dart';
 
 @RoutePage()
@@ -15,7 +16,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool isLoading = false;
 
   final emailController = TextEditingController();
-
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -33,23 +33,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
 
     formKey.currentState?.save();
-    showLoginStatus();
+    showForgotPasswordStatus();
   }
 
-  Future showLoginStatus() async {
-    // final email = emailController.text.trim();
-    // final password = passwordController.text.trim();
-
+  Future showForgotPasswordStatus() async {
     setState(() {
       isLoading = true;
     });
-
     try {
-      //
+      final email = emailController.text.trim();
+      await $firebaseUtil.forgotPassword(email);
+      context.showSuccessSnackBar(
+          'A reset password mail has been sent to your account');
+      context.router.maybePop();
     } catch (exception) {
       context.showErrorSnackBar(exception.toString());
     }
-
     setState(() {
       isLoading = false;
     });
@@ -60,29 +59,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return AppScaffold(
       enableInternetCheck: true,
       appBar: buildAppBar(),
-      backgroundColor: context.backgroundColor,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Padding(
           padding: const EdgeInsets.all(space12),
           child: Column(
             children: [
-              Expanded(child: buildBody()),
-              verticalSpacer12,
-              AppBtn.basic(
-                onPressed: () {
-                  // context.router.push(const ForgotPasswordRoute());
-                },
-                child: Text(
-                  'Terms and Conditions of Use',
-                  style: satoshi600S12,
-                ).fadeIn(),
+              Expanded(
+                child: buildBody(),
               ),
+              verticalSpacer12,
+              buildTAndC(),
               verticalSpacer12,
             ],
           ),
         ),
       ),
+    );
+  }
+
+  AppBtn buildTAndC() {
+    return AppBtn.basic(
+      onPressed: () {},
+      child: Text(
+        'Terms and Conditions of Use',
+        style: satoshi600S12,
+      ).fadeIn(),
     );
   }
 
@@ -93,20 +95,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Transform.scale(
-                scale: 1.2,
-                child: Lottie.asset(
-                  lockLottie,
-                  animate: true,
-                  repeat: true,
-                  reverse: true,
-                  width: 250,
-                  height: 250,
-                  fit: BoxFit.contain,
-                ),
-              ).fadeInAndMoveFromBottom(),
-            ),
+            buildLottie(),
             verticalSpacer16,
             Text('Forgot Password', style: satoshi600S24)
                 .fadeInAndMoveFromBottom(),
@@ -118,7 +107,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ...buildEmail(),
             verticalSpacer16,
             AppBtn.from(
-              onPressed: saveForm,
+              onPressed: () => saveForm(),
               isLoading: isLoading,
               text: 'Continue',
             ),
@@ -126,6 +115,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Center buildLottie() {
+    return Center(
+      child: Transform.scale(
+        scale: 1.2,
+        child: Lottie.asset(
+          lockLottie,
+          animate: true,
+          repeat: true,
+          reverse: true,
+          width: 250,
+          height: 250,
+          fit: BoxFit.contain,
+        ),
+      ).fadeInAndMoveFromBottom(),
     );
   }
 

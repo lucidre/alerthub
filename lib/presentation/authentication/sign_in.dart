@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:alerthub/api/firebase_util.dart';
 import 'package:alerthub/common_libs.dart';
 
 @RoutePage()
@@ -17,7 +18,6 @@ class _SignInScreenState extends State<SignInScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordFocusNode = FocusNode();
-
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -29,12 +29,11 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void saveForm() {
-    context.router.push(const MainRoute());
-    return;
     FocusScope.of(context).unfocus();
-    final isValid = formKey.currentState?.validate();
 
-    if ((isValid ?? false) == false || isLoading) {
+    final isValid = formKey.currentState?.validate() ?? false;
+
+    if (!isValid || isLoading) {
       return;
     }
 
@@ -43,15 +42,16 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future showLoginStatus() async {
-    // final email = emailController.text.trim();
-    // final password = passwordController.text.trim();
-
     setState(() {
       isLoading = true;
     });
 
     try {
-      //
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+      await $firebaseUtil.logIn(email, password);
+
+      context.router.push(const MainRoute());
     } catch (exception) {
       context.showErrorSnackBar(exception.toString());
     }
@@ -66,29 +66,32 @@ class _SignInScreenState extends State<SignInScreen> {
     return AppScaffold(
       enableInternetCheck: true,
       appBar: buildAppBar(),
-      backgroundColor: context.backgroundColor,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Padding(
           padding: const EdgeInsets.all(space12),
           child: Column(
             children: [
-              Expanded(child: buildBody()),
-              verticalSpacer12,
-              AppBtn.basic(
-                onPressed: () {
-                  // context.router.push(const ForgotPasswordRoute());
-                },
-                child: Text(
-                  'Terms and Conditions of Use',
-                  style: satoshi600S12,
-                ).fadeIn(),
+              Expanded(
+                child: buildBody(),
               ),
+              verticalSpacer12,
+              buildTAndC(),
               verticalSpacer12,
             ],
           ),
         ),
       ),
+    );
+  }
+
+  AppBtn buildTAndC() {
+    return AppBtn.basic(
+      onPressed: () {},
+      child: Text(
+        'Terms and Conditions of Use',
+        style: satoshi600S12,
+      ).fadeInAndMoveFromBottom(),
     );
   }
 
@@ -113,12 +116,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Text(
                   'Forgot password?',
                   style: satoshi600S12,
-                ).fadeIn(),
+                ).fadeInAndMoveFromBottom(),
               ),
             ),
             verticalSpacer16,
             AppBtn.from(
-              onPressed: saveForm,
+              onPressed: () => saveForm(),
               isLoading: isLoading,
               text: 'Continue',
             ),

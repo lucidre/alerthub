@@ -8,6 +8,8 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:alerthub/common_libs.dart' as _i15;
+import 'package:alerthub/models/event/event.dart' as _i16;
 import 'package:alerthub/presentation/alert/alert_mode.dart' as _i1;
 import 'package:alerthub/presentation/authentication/forgot_password.dart'
     as _i5;
@@ -83,10 +85,17 @@ class EditProfileRoute extends _i14.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.EventDetailsScreen]
-class EventDetailsRoute extends _i14.PageRouteInfo<void> {
-  const EventDetailsRoute({List<_i14.PageRouteInfo>? children})
-      : super(
+class EventDetailsRoute extends _i14.PageRouteInfo<EventDetailsRouteArgs> {
+  EventDetailsRoute({
+    _i15.Key? key,
+    required _i16.EventModel event,
+    List<_i14.PageRouteInfo>? children,
+  }) : super(
           EventDetailsRoute.name,
+          args: EventDetailsRouteArgs(
+            key: key,
+            event: event,
+          ),
           initialChildren: children,
         );
 
@@ -95,9 +104,29 @@ class EventDetailsRoute extends _i14.PageRouteInfo<void> {
   static _i14.PageInfo page = _i14.PageInfo(
     name,
     builder: (data) {
-      return const _i4.EventDetailsScreen();
+      final args = data.argsAs<EventDetailsRouteArgs>();
+      return _i4.EventDetailsScreen(
+        key: args.key,
+        event: args.event,
+      );
     },
   );
+}
+
+class EventDetailsRouteArgs {
+  const EventDetailsRouteArgs({
+    this.key,
+    required this.event,
+  });
+
+  final _i15.Key? key;
+
+  final _i16.EventModel event;
+
+  @override
+  String toString() {
+    return 'EventDetailsRouteArgs{key: $key, event: $event}';
+  }
 }
 
 /// generated route for
@@ -178,10 +207,17 @@ class OnboardingRoute extends _i14.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i9.SearchScreen]
-class SearchRoute extends _i14.PageRouteInfo<void> {
-  const SearchRoute({List<_i14.PageRouteInfo>? children})
-      : super(
+class SearchRoute extends _i14.PageRouteInfo<SearchRouteArgs> {
+  SearchRoute({
+    _i15.Key? key,
+    required String search,
+    List<_i14.PageRouteInfo>? children,
+  }) : super(
           SearchRoute.name,
+          args: SearchRouteArgs(
+            key: key,
+            search: search,
+          ),
           initialChildren: children,
         );
 
@@ -190,9 +226,29 @@ class SearchRoute extends _i14.PageRouteInfo<void> {
   static _i14.PageInfo page = _i14.PageInfo(
     name,
     builder: (data) {
-      return const _i9.SearchScreen();
+      final args = data.argsAs<SearchRouteArgs>();
+      return _i9.SearchScreen(
+        key: args.key,
+        search: args.search,
+      );
     },
   );
+}
+
+class SearchRouteArgs {
+  const SearchRouteArgs({
+    this.key,
+    required this.search,
+  });
+
+  final _i15.Key? key;
+
+  final String search;
+
+  @override
+  String toString() {
+    return 'SearchRouteArgs{key: $key, search: $search}';
+  }
 }
 
 /// generated route for

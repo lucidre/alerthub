@@ -27,6 +27,7 @@ class BottomNavBar extends StatelessWidget {
         left: space12,
         right: space12,
         top: space12,
+        bottom: space6,
       ),
       child: SafeArea(
         child: Row(

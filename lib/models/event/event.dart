@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:alerthub/common_libs.dart';
 import 'package:collection/collection.dart';
 
 class EventModel {
@@ -11,7 +12,7 @@ class EventModel {
   double? lat;
   double? long;
   List<String>? images;
-  String? priority;
+  EventPriority? priority;
   int? upVote;
   int? downVote;
   String? availiablity;
@@ -48,8 +49,12 @@ class EventModel {
         location: data['location'] as String?,
         lat: (data['lat'] as num?)?.toDouble(),
         long: (data['long'] as num?)?.toDouble(),
-        images: data['images'] as List<String>?,
-        priority: data['priority'] as String?,
+        images: (data['images'] as List<dynamic>?)?.map((e) {
+          return e.toString();
+        }).toList(),
+        priority: data['priority'] != null
+            ? priorityFromName(data['priority'])
+            : null,
         upVote: data['up_vote'] as int?,
         downVote: data['down_vote'] as int?,
         availiablity: data['availiablity'] as String?,
@@ -66,7 +71,7 @@ class EventModel {
         'lat': lat,
         'long': long,
         'images': images,
-        'priority': priority,
+        'priority': priority?.name,
         'up_vote': upVote,
         'down_vote': downVote,
         'availiablity': availiablity,
@@ -95,7 +100,7 @@ class EventModel {
     double? lat,
     double? long,
     List<String>? images,
-    String? priority,
+    EventPriority? priority,
     int? upVote,
     int? downVote,
     String? availiablity,
@@ -144,4 +149,72 @@ class EventModel {
       availiablity.hashCode ^
       createdAt.hashCode ^
       updatedAt.hashCode;
+}
+
+enum EventPriority {
+  high,
+  medium,
+  low,
+}
+
+EventPriority priorityFromName(String name) {
+  if (name == 'high') {
+    return EventPriority.high;
+  } else if (name == 'medium') {
+    return EventPriority.medium;
+  } else {
+    return EventPriority.low;
+  }
+}
+
+extension EventExtension on EventPriority {
+  String get displayName {
+    if (this == EventPriority.high) {
+      return 'High';
+    } else if (this == EventPriority.medium) {
+      return 'Medium';
+    } else {
+      return 'Low';
+    }
+  }
+
+  Color get color {
+    if (this == EventPriority.high) {
+      return destructive600;
+    } else if (this == EventPriority.medium) {
+      return warning600;
+    } else {
+      return primary600;
+    }
+  }
+
+  Color get color2 {
+    if (this == EventPriority.high) {
+      return destructive500;
+    } else if (this == EventPriority.medium) {
+      return warning500;
+    } else {
+      return primary400;
+    }
+  }
+
+  Color get color3 {
+    if (this == EventPriority.high) {
+      return destructive100;
+    } else if (this == EventPriority.medium) {
+      return warning100;
+    } else {
+      return primary100;
+    }
+  }
+
+  Color get color4 {
+    if (this == EventPriority.high) {
+      return destructive300;
+    } else if (this == EventPriority.medium) {
+      return warning400;
+    } else {
+      return primary400;
+    }
+  }
 }

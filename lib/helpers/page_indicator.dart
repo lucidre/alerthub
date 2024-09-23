@@ -1,24 +1,25 @@
 import 'package:alerthub/common_libs.dart';
 
 class AppPageIndicator extends StatefulWidget {
-  const AppPageIndicator({
-    Key? key,
-    required this.count,
-    required this.controller,
-    required this.color,
-    this.opacity,
-  }) : super(key: key);
   final int count;
   final PageController controller;
   final Color color;
   final double? opacity;
+
+  const AppPageIndicator({
+    super.key,
+    required this.count,
+    required this.controller,
+    required this.color,
+    this.opacity,
+  });
 
   @override
   State<AppPageIndicator> createState() => _AppPageIndicatorState();
 }
 
 class _AppPageIndicatorState extends State<AppPageIndicator> {
-  final _currentPage = ValueNotifier(0);
+  final currentPage = ValueNotifier(0);
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class _AppPageIndicatorState extends State<AppPageIndicator> {
   }
 
   void _handlePageChanged() {
-    _currentPage.value = widget.controller.page!.round();
+    currentPage.value = widget.controller.page?.round() ?? 0;
   }
 
   @override
@@ -37,7 +38,7 @@ class _AppPageIndicatorState extends State<AppPageIndicator> {
       data.add(i);
     }
     return ValueListenableBuilder<int>(
-      valueListenable: _currentPage,
+      valueListenable: currentPage,
       builder: (_, value, child) {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,20 +56,29 @@ class _AppPageIndicatorState extends State<AppPageIndicator> {
     ).fadeIn();
   }
 
-  Widget buildIndicator(
-    bool isSelected,
-  ) {
-    return AnimatedContainer(
-      duration: fastDuration,
-      width: space8,
-      height: space8,
-      margin: const EdgeInsets.only(right: kDefaultMargin / 4),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? widget.color
-            : widget.color.withOpacity(widget.opacity ?? .2),
-        borderRadius: BorderRadius.circular(cornersMedium),
-      ),
-    );
+  Widget buildIndicator(bool isSelected) {
+    return TweenAnimationBuilder<double>(
+        tween: Tween(end: isSelected ? 1 : 0),
+        curve: Curves.easeIn,
+        duration: fastDuration,
+        builder: (context, value, _) {
+          return AnimatedContainer(
+            duration: fastDuration,
+            width: 5 + (value * 45),
+            height: 5,
+            margin: const EdgeInsets.only(
+              left: 2,
+              right: 2,
+            ),
+            decoration: BoxDecoration(
+              color: Color.lerp(
+                widget.color.withOpacity(widget.opacity ?? .3),
+                widget.color,
+                value,
+              ),
+              borderRadius: BorderRadius.circular(cornersMedium),
+            ),
+          );
+        });
   }
 }

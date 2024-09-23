@@ -1,14 +1,22 @@
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/helpers/page_indicator.dart';
+import 'package:alerthub/models/event/event.dart';
 
 @RoutePage()
 class EventDetailsScreen extends StatefulWidget {
-  const EventDetailsScreen({super.key});
+  final EventModel event;
+
+  const EventDetailsScreen({
+    super.key,
+    required this.event,
+  });
 
   @override
   State<EventDetailsScreen> createState() => _EventDetailsScreenState();
 }
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
+  final pageController = PageController();
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -38,6 +46,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   Container buildImage() {
+    final images = widget.event.images ?? [];
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(space12),
@@ -50,64 +59,34 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         children: [
           AspectRatio(
             aspectRatio: 2,
-            child: Container(
-              decoration: BoxDecoration(
-                color: blackColor.withOpacity(.1),
-                borderRadius: BorderRadius.circular(space4),
-                border: Border.all(color: neutral200),
-              ),
+            child: PageView.builder(
+              controller: pageController,
+              itemCount: images.length,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (ctx, index) {
+                return Container(
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    margin: const EdgeInsets.all(space4),
+                    decoration: BoxDecoration(
+                      color: blackColor.withOpacity(.1),
+                      borderRadius: BorderRadius.circular(space4),
+                      border: Border.all(
+                        color: neutral200,
+                        strokeAlign: BorderSide.strokeAlignOutside,
+                      ),
+                    ),
+                    child: AppImage(
+                      imageUrl: images[index],
+                      fit: BoxFit.cover,
+                    ));
+              },
             ),
           ),
           verticalSpacer12,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 5,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: blackColor.withOpacity(.3),
-                  borderRadius: BorderRadius.circular(space4),
-                ),
-              ),
-              horizontalSpacer4,
-              Container(
-                width: 50,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: blackColor.withOpacity(.8),
-                  borderRadius: BorderRadius.circular(space4),
-                ),
-              ),
-              horizontalSpacer4,
-              Container(
-                width: 5,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: blackColor.withOpacity(.3),
-                  borderRadius: BorderRadius.circular(space4),
-                ),
-              ),
-              horizontalSpacer4,
-              Container(
-                width: 5,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: blackColor.withOpacity(.3),
-                  borderRadius: BorderRadius.circular(space4),
-                ),
-              ),
-              horizontalSpacer4,
-              Container(
-                width: 5,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: blackColor.withOpacity(.3),
-                  borderRadius: BorderRadius.circular(space4),
-                ),
-              ),
-            ],
-          ),
+          AppPageIndicator(
+              count: images.length,
+              controller: pageController,
+              color: blackShade1Color),
         ],
       ),
     );
@@ -133,7 +112,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           context.divider,
           verticalSpacer12,
           Text(
-            loremIspidiumMassive,
+            widget.event.description ?? '',
             style: satoshi500S12,
           ).fadeInAndMoveFromBottom(),
         ],
@@ -161,7 +140,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           context.divider,
           verticalSpacer12,
           Text(
-            loremIspidiumTitle,
+            widget.event.location ?? '',
             style: satoshi500S12,
           ).fadeInAndMoveFromBottom(),
           verticalSpacer12,
@@ -195,7 +174,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           context.divider,
           verticalSpacer12,
           Text(
-            '24 hours',
+            widget.event.availiablity ?? '',
             style: satoshi500S12,
           ).fadeInAndMoveFromBottom(),
         ],
@@ -239,7 +218,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                         color: primary800,
                       ),
                       Text(
-                        '20 users voted accurate',
+                        '${widget.event.upVote ?? 0} users voted accurate',
                         style: satoshi500S12.copyWith(color: primary800),
                       ).fadeInAndMoveFromBottom(),
                     ],
@@ -262,7 +241,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                         color: destructive700,
                       ),
                       Text(
-                        '10 users voted inaccurate',
+                        '${widget.event.downVote ?? 0} users voted inaccurate',
                         style: satoshi500S12.copyWith(color: destructive700),
                       ).fadeInAndMoveFromBottom(),
                     ],
@@ -287,23 +266,25 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(space12),
       decoration: BoxDecoration(
-        color: destructive100,
+        color: widget.event.priority?.color3,
         borderRadius: BorderRadius.circular(space4),
-        border: Border.all(color: destructive300),
+        border: Border.all(
+          color: widget.event.priority?.color4 ?? neutral300,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Priority (HIGH)',
-            style: satoshi600S14.copyWith(color: destructive600),
+            'Priority (${widget.event.priority?.name.toUpperCase()})',
+            style: satoshi600S14.copyWith(color: widget.event.priority?.color),
           ).fadeInAndMoveFromBottom(),
           verticalSpacer12,
           context.divider,
           verticalSpacer12,
           Text(
             loremIspidiumLong,
-            style: satoshi500S12.copyWith(color: destructive500),
+            style: satoshi500S12.copyWith(color: widget.event.priority?.color2),
           ).fadeInAndMoveFromBottom(),
         ],
       ),
@@ -317,7 +298,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       elevation: 0,
       centerTitle: false,
       backgroundColor: context.backgroundColor,
-      title: Text(loremIspidiumTitle, style: satoshi600S24).fadeIn(),
+      title: Text(widget.event.name ?? '', style: satoshi600S24).fadeIn(),
     );
   }
 }

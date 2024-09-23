@@ -27,7 +27,7 @@ class MapEventItem extends StatelessWidget {
           verticalSpacer12,
           AppBtn.from(
             onPressed: () {
-              context.router.push(const EventDetailsRoute());
+              // context.router.push(const EventDetailsRoute());
             },
             text: 'View Event',
           ),

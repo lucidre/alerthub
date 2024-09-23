@@ -7,13 +7,12 @@ class AppSearchBar extends StatelessWidget {
   final bool shimmerEnabled;
   final String? hint;
   const AppSearchBar(
-      {Key? key,
+      {super.key,
       required this.onDone,
       this.initialValue,
       this.hint,
       this.isClickable = true,
-      this.shimmerEnabled = false})
-      : super(key: key);
+      this.shimmerEnabled = false});
 
   @override
   Widget build(BuildContext context) {

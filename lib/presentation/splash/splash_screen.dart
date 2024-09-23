@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:alerthub/api/firebase_util.dart';
 import 'package:alerthub/common_libs.dart';
 
 @RoutePage()
@@ -57,21 +58,11 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void route() async {
-    context.router.replace(const OnboardingRoute());
-    /*    if (AppPreferences.userData != null && !AppPreferences.shouldRememberUser) {
-      try {
-        await $networkUtil.logoutCurrentDevice();
-      } catch (_) {}
-      AppPreferences.logOutUser();
-    }
-
-    if (AppPreferences.userData != null && AppPreferences.shouldRememberUser) {
-      checkUserVerification();
+    if ($firebaseUtil.sAuth.currentUser != null) {
+      context.router.replace(const MainRoute());
     } else {
-      AppPreferences.logOutUser();
-      context.router
-          .pushAndPopUntil(const OnboardingRoute(), predicate: (_) => false);
-    } */
+      context.router.replace(const OnboardingRoute());
+    }
   }
 
   Future startTime() async {

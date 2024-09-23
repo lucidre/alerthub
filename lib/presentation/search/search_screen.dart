@@ -1,15 +1,113 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:alerthub/api/firebase_util.dart';
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/models/event/event.dart';
+import 'package:alerthub/presentation/event/event_item.dart';
 import 'package:flutter/cupertino.dart';
 
 @RoutePage()
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final String search;
+  const SearchScreen({
+    super.key,
+    required this.search,
+  });
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final searchController = TextEditingController();
+  final List<EventModel> events = [];
+
+  bool isLoading = true;
+  bool hasError = false;
+  bool allDataLoaded = false;
+  bool oldDataLoading = false;
+  bool isRefreshing = false;
+
+  final progressStream = StreamController<bool>();
+  final scrollController = ScrollController();
+  final refreshController = RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
+    setState(() {
+      isRefreshing = true;
+    });
+    await getData();
+    setState(() {
+      isRefreshing = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      searchController.text = widget.search;
+      getData();
+      progressStream.add(false);
+
+      scrollController.addListener(() {
+        if (scrollController.position.pixels >
+                scrollController.position.maxScrollExtent - 10 &&
+            !isLoading &&
+            !allDataLoaded &&
+            !isRefreshing &&
+            events.isNotEmpty &&
+            !oldDataLoading) {
+          getOldData();
+        }
+      });
+    });
+  }
+
+  getData() async {
+    isLoading = true;
+    hasError = false;
+    events.clear();
+    setState(() {});
+
+    try {
+      final search = searchController.text.trim();
+      final data = await $firebaseUtil.searchEvents(search);
+      events.addAll(data);
+      if (isRefreshing) {
+        refreshController.refreshCompleted();
+      }
+    } catch (exception) {
+      hasError = true;
+      context.showErrorSnackBar(exception.toString());
+      if (isRefreshing) {
+        refreshController.refreshFailed();
+      }
+    }
+
+    isLoading = false;
+    setState(() {});
+  }
+
+  getOldData() async {
+    oldDataLoading = true;
+    progressStream.add(true);
+
+    try {
+      final data = await $firebaseUtil.searchEvents(
+        searchController.text.trim(),
+        events.last.createdAt,
+      );
+      allDataLoaded = data.isEmpty;
+      events.addAll(data);
+    } catch (exception) {
+      allDataLoaded = true;
+    }
+
+    oldDataLoading = false;
+    progressStream.add(false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -18,7 +116,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  buildBody() {
+  Widget buildBody() {
     return Stack(
       children: [
         buildBackgroundColor(),
@@ -38,7 +136,34 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
                 padding: const EdgeInsets.all(space12),
-                child: buildList(),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SmartRefresher(
+                        enablePullDown: true,
+                        header: const ClassicHeader(
+                            refreshStyle: RefreshStyle.UnFollow),
+                        onRefresh: () => onRefresh(),
+                        controller: refreshController,
+                        child: isLoading
+                            ? buildLoadingBody()
+                            : hasError
+                                ? context.buildErrorWidget(
+                                    onRetry: () => getData())
+                                : searchController.text.trim().isEmpty
+                                    ? context.buildNoDataWidget(
+                                        title: 'No Parameter',
+                                        body:
+                                            'Kindly enter an event name or location to search.',
+                                      )
+                                    : events.isEmpty
+                                        ? context.buildNoDataWidget()
+                                        : buildList(),
+                      ),
+                    ),
+                    AppFetchingProgressBar(stream: progressStream.stream),
+                  ],
+                ),
               ),
             ),
           ],
@@ -47,53 +172,38 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  buildList() {
-    return SingleChildScrollView(
+  buildLoadingBody() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(0),
+      itemBuilder: (ctx, index) {
+        return EventItem(
+          event: EventModel(),
+          shimmerEnabled: true,
+          onPressed: () {},
+        );
+      },
       physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: whiteColor,
-              borderRadius: BorderRadius.circular(space4),
-              border: Border.all(color: neutral200),
-            ),
-          ).fadeInAndMoveFromBottom(),
-          verticalSpacer12,
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: whiteColor,
-              borderRadius: BorderRadius.circular(space4),
-              border: Border.all(color: neutral200),
-            ),
-          ).fadeInAndMoveFromBottom(),
-          verticalSpacer12,
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: whiteColor,
-              borderRadius: BorderRadius.circular(space4),
-              border: Border.all(color: neutral200),
-            ),
-          ).fadeInAndMoveFromBottom(),
-          verticalSpacer12,
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: whiteColor,
-              borderRadius: BorderRadius.circular(space4),
-              border: Border.all(color: neutral200),
-            ),
-          ).fadeInAndMoveFromBottom(),
-          verticalSpacer12,
-        ],
-      ),
+      itemCount: 10,
+    );
+  }
+
+//TODO On refesh being called on list drag.
+  Widget buildList() {
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.all(0),
+      itemBuilder: (ctx, index) {
+        final event = events[index];
+        return EventItem(
+          event: event,
+          shimmerEnabled: false,
+          onPressed: () => context.router.push(
+            EventDetailsRoute(event: event),
+          ),
+        );
+      },
+      physics: const BouncingScrollPhysics(),
+      itemCount: events.length,
     );
   }
 
@@ -153,11 +263,13 @@ class _SearchScreenState extends State<SearchScreen> {
     return TextFormField(
       textInputAction: TextInputAction.search,
       decoration: context.inputDecoration(
-          hintText: "Search event or location",
-          fillColor: whiteColor,
-          borderSide: const BorderSide(color: neutral300)),
+        hintText: "Search event name or location",
+        fillColor: whiteColor,
+        borderSide: const BorderSide(color: neutral300),
+      ),
       keyboardType: TextInputType.name,
-      // controller: searchController,
+      onFieldSubmitted: (_) => getData(),
+      controller: searchController,
     );
   }
 

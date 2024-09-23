@@ -15,6 +15,7 @@ _initializeControlllers() {
   Get.put(RouterController(), permanent: true);
   Get.put(MapController(), permanent: true);
   Get.put(ConnectionStatusController(), permanent: true);
+  Get.put(ProfileController(), permanent: true);
 }
 
 _initializeWindow() async {

@@ -63,7 +63,6 @@ class FirebaseUtil {
         email: email,
         phoneNumber: phoneNumber,
         country: country,
-        password: password,
       );
       await sAuth.signOut();
     } on SocketException {
@@ -86,7 +85,6 @@ class FirebaseUtil {
     String? email,
     String? phoneNumber,
     String? country,
-    String? password,
     String? imageUrl,
   }) async {
     try {
@@ -139,6 +137,132 @@ class FirebaseUtil {
         },
       ).toList();
       return eventList;
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+  Future<void> uploadEvent({
+    required String eventId,
+    required String name,
+    required String description,
+    required String location,
+    required EventPriority priority,
+    required String availiablity,
+    required List<String> images,
+    required int? createdAt,
+    required int? updatedAt,
+  }) async {
+    try {
+      final uid = sAuth.currentUser?.uid;
+
+      final event = EventModel(
+        id: eventId,
+        name: name,
+        description: description,
+        creatorId: uid,
+        location: location,
+        images: images,
+        priority: priority,
+        availiablity: availiablity,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+      await cEvents.doc(eventId).set(event.toMap(), SetOptions(merge: true));
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+  Future<List<EventModel>> getUserEvents([int? lastTimestamp]) async {
+    try {
+      Query<Map<String, dynamic>> qwery = cEvents
+          .limit(30)
+          .orderBy('updated_at', descending: true)
+          .where('creator_id', isEqualTo: sAuth.currentUser?.uid);
+
+      if (lastTimestamp != null) {
+        qwery.where('updated_at', isLessThan: lastTimestamp);
+      }
+
+      final qwerySnapshot = await qwery.get();
+
+      final eventList = qwerySnapshot.docs
+          .map((data) => EventModel.fromMap(data.data()))
+          .toList();
+      return eventList;
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+//TODO
+  Future<List<EventModel>> searchEvents(String qwery,
+      [int? lastTimestamp]) async {
+    try {
+      Query<Map<String, dynamic>> qwery =
+          cEvents.limit(30).orderBy('updated_at', descending: true);
+
+      if (lastTimestamp != null) {
+        qwery.where('updated_at', isLessThan: lastTimestamp);
+      }
+
+      final qwerySnapshot = await qwery.get();
+
+      final eventList = qwerySnapshot.docs
+          .map((data) => EventModel.fromMap(data.data()))
+          .toList();
+      return eventList;
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+  Future<List<String>> uploadEventImages(
+      String eventId, List<String> paths) async {
+    try {
+      final uid = sAuth.currentUser?.uid;
+      final urls = <String>[];
+      for (String path in paths) {
+        final imageId = generateDataId();
+        final url = await uploadDocument(
+          path,
+          '$_events/$uid/$eventId/images',
+          imageId,
+        );
+        urls.add(url);
+      }
+      return urls;
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+  Future<String> uploadProfilePicture(String filePath) async {
+    try {
+      final uid = sAuth.currentUser?.uid;
+      final url = await uploadDocument(
+        filePath,
+        '$_users/$uid',
+        'profileImage',
+      );
+      return url;
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+  Future<String> uploadDocument(
+    String filePath,
+    String savePath,
+    String name,
+  ) async {
+    Reference firebaseStorageRef = sStorage.child('$savePath/$name');
+    try {
+      UploadTask uploadTask = firebaseStorageRef.putFile(File(filePath));
+      final TaskSnapshot taskSnapshot = await uploadTask;
+      String url = await taskSnapshot.ref.getDownloadURL();
+      return url;
     } catch (exception) {
       return Future.error(exception.toString());
     }

@@ -9,14 +9,14 @@ class AppImage extends StatelessWidget {
   final BoxFit? fit;
   final String? heroTag;
   const AppImage({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.height,
     this.width,
     this.isLoadingProgressBar = false,
     this.fit,
     this.heroTag,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class AppImage extends StatelessWidget {
       height: height ?? double.infinity,
       placeholder: (context, url) => AppShimmer(
         shimmerEnabled: true,
-        child: isLoadingProgressBar
+        shimmerChild: isLoadingProgressBar
             ? Center(
                 child: SizedBox(
                   height: 40,
@@ -50,6 +50,7 @@ class AppImage extends StatelessWidget {
                 height: height ?? double.infinity,
                 color: Colors.black,
               ),
+        child: const SizedBox(),
       ),
       errorWidget: (context, url, error) => const SizedBox(),
     );

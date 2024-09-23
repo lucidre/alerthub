@@ -112,27 +112,6 @@ extension DeviceBar on BuildContext {
         snackBarPosition: SnackBarPosition.top);
   }
 
-  Future<Y?> showErrorDialog<Y>(
-    String? cause, {
-    String? title,
-    Icon? icon,
-    List<Widget> children = const [],
-  }) {
-    return showBottomBar(
-      child: InformationWidget(
-        icon: icon ??
-            const Icon(
-              Icons.error_rounded,
-              color: Colors.red,
-              size: 70,
-            ),
-        title: title ?? 'Error Occurred',
-        description: cause ?? 'An error occurred, please try again later.',
-        children: children,
-      ),
-    );
-  }
-
   void showSuccessSnackBar(String message) {
     showTopSnackBar(
         Overlay.of(this),
@@ -144,27 +123,6 @@ extension DeviceBar on BuildContext {
             textStyle: satoshi500S14.copyWith(
                 color: shadeWhite, fontWeight: FontWeight.w600)),
         snackBarPosition: SnackBarPosition.top);
-  }
-
-  Future<S?> showSuccessDialog<S>(
-    String description, {
-    String? title,
-    Icon? icon,
-    List<Widget> children = const [],
-  }) {
-    return showBottomBar<S>(
-      child: InformationWidget(
-        icon: icon ??
-            const Icon(
-              Icons.check_rounded,
-              color: Colors.green,
-              size: 70,
-            ),
-        title: title ?? 'Successful',
-        description: description,
-        children: children,
-      ),
-    );
   }
 
   Future<S?> showCustomAlertDIalog<S>({
@@ -235,7 +193,7 @@ extension DeviceBar on BuildContext {
         verticalSpacer12,
         Text(
           title ?? 'Error Occurred',
-          style: satoshi500S24,
+          style: satoshi600S20,
         ).fadeInAndMoveFromBottom(),
         verticalSpacer8,
         Text(
@@ -279,7 +237,7 @@ extension DeviceBar on BuildContext {
         verticalSpacer12,
         Text(
           title ?? 'No Data',
-          style: satoshi600S24,
+          style: satoshi600S20,
         ).fadeInAndMoveFromBottom(),
         Text(
           body ?? 'There is currently no data to display.',

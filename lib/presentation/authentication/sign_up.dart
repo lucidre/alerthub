@@ -179,7 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         TextFormField(
           textInputAction: TextInputAction.next,
           onFieldSubmitted: (_) {
-            FocusScope.of(context).requestFocus(phoneNumberFocusNode);
+            FocusScope.of(context).requestFocus(emailFocusNode);
           },
           decoration:
               context.inputDecoration(hintText: "Enter your full name."),

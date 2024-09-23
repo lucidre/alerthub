@@ -1,7 +1,7 @@
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/helpers/bottom_nav.dart';
 import 'package:alerthub/models/bottom_bar.dart';
-import 'package:alerthub/presentation/main/tabs/event/event_tab.dart';
+import 'package:alerthub/presentation/main/tabs/map/map_tab.dart';
 import 'package:alerthub/presentation/main/tabs/home/home_tab.dart';
 import 'package:alerthub/presentation/main/tabs/profile/profile_tab.dart';
 
@@ -18,7 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   int index = 0;
   final pages = [
     const HomeTab(),
-    const EventTab(),
+    const MapTab(),
     const ProfileTab(),
   ];
   @override
@@ -64,7 +64,7 @@ class _MainScreenState extends State<MainScreen> {
   buildFAB() {
     return TweenAnimationBuilder<double>(
         tween: Tween(
-          end: index != 2 ? 1.0 : 0.0,
+          end: index == 0 ? 1.0 : 0.0,
         ),
         curve: Curves.easeIn,
         duration: medDuration,
@@ -72,7 +72,7 @@ class _MainScreenState extends State<MainScreen> {
           return Transform.translate(
             offset: Offset(0, (1 - value) * 15),
             child: IgnorePointer(
-              ignoring: index == 2,
+              ignoring: index != 0,
               child: Opacity(
                 opacity: value > .5 ? 1 : value,
                 child: FloatingActionButton(

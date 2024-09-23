@@ -5,13 +5,14 @@ class AppShimmer extends StatelessWidget {
   final bool shimmerEnabled;
   final Color? shimmerColor;
   final Widget child;
+  final Widget? shimmerChild;
 
   const AppShimmer(
-      {Key? key,
+      {super.key,
       required this.shimmerEnabled,
       required this.child,
-      this.shimmerColor})
-      : super(key: key);
+      this.shimmerChild,
+      this.shimmerColor});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class AppShimmer extends StatelessWidget {
                 context.textColor.withOpacity(0.1),
             highlightColor: shimmerColor?.withOpacity(.4) ??
                 context.textColor.withOpacity(0.2),
-            child: child,
+            child: shimmerEnabled ? (shimmerChild ?? child) : child,
           )
         : child;
   }

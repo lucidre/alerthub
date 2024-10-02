@@ -6,6 +6,7 @@ import 'package:alerthub/api/firebase_util.dart';
 import 'package:alerthub/api/network_utils.dart';
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/models/event/event.dart';
+import 'package:alerthub/presentation/event/event_priority_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -145,12 +146,24 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
             buildImages(),
             verticalSpacer12,
             ...buildEventRange(),
-            verticalSpacer16,
-            Center(
-              child: Text(
-                'Kindly ensure the details you entered are accurate. ',
-                style: satoshi600S12,
-                textAlign: TextAlign.center,
+            verticalSpacer16 * 2,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(space12),
+              decoration: BoxDecoration(
+                color: whiteColor,
+                borderRadius: BorderRadius.circular(space4),
+                border: Border.all(color: neutral200),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Please make sure the information you provide is accurate. Once your event is uploaded, it will be verified by other users. If it is found to be false, it will be removed.',
+                    style: satoshi600S12,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
             verticalSpacer16,
@@ -302,36 +315,46 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       verticalSpacer8,
       Container(
         width: double.infinity,
+        padding: const EdgeInsets.only(
+          top: space8,
+          bottom: space8,
+          left: space12,
+          right: space12,
+        ),
         decoration: BoxDecoration(
             border: Border.all(color: neutral200),
             color: shadeWhite,
             borderRadius: BorderRadius.circular(cornersSmall)),
-        child: DropdownButton<EventPriority>(
-          value: selectedPriority,
-          icon: const Icon(Icons.arrow_drop_down_rounded),
-          style: satoshi500S14,
-          alignment: Alignment.centerLeft,
-          underline: const SizedBox(width: double.infinity),
-          isExpanded: true,
-          padding: const EdgeInsets.only(
-            left: space12,
-            right: space12,
-          ),
-          hint: Text(
-            'Select the priority',
-            style: satoshi500S14.copyWith(color: neutral400),
-          ),
-          items: EventPriority.values.map((item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text('${item.displayName} Priority', style: satoshi500S14),
+        child: InkWell(
+          onTap: () async {
+            FocusScope.of(context).unfocus();
+
+            final result = await context.showBottomBar(
+              child: EventPriorityPicker(
+                priority: selectedPriority,
+              ),
             );
-          }).toList(),
-          onChanged: (newValue) {
-            setState(() {
-              selectedPriority = newValue;
-            });
+            if (result != null && result is EventPriority) {
+              setState(() {
+                selectedPriority = result;
+              });
+            }
           },
+          splashColor: Colors.transparent,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  selectedPriority == null
+                      ? 'Select the priority'
+                      : '${selectedPriority!.displayName} Priority',
+                  style: satoshi500S14.copyWith(
+                      color: selectedPriority == null ? neutral400 : null),
+                ),
+              ),
+              const Icon(Icons.arrow_drop_down_rounded),
+            ],
+          ),
         ),
       ).fadeInAndMoveFromBottom(),
     ];

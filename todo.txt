@@ -1,0 +1,12 @@
+- event availiablity. 
+- upvote and downvote. 
+- comment. 
+- settings 
+- notifications. 
+- edit and delete event. 
+- user profile on description. 
+- Alert mode.
+- map api key.
+- clean architecture. 
+- localization. 
+- color change. 

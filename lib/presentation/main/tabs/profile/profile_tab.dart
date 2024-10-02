@@ -17,8 +17,8 @@ class _ProfileTabState extends State<ProfileTab> {
 
     await Future.wait<dynamic>(
       [
-        controller.getUpData(),
         controller.getUpcData(),
+        controller.getUpData(),
       ],
     );
     refreshController.refreshCompleted();

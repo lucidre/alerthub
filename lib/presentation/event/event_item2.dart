@@ -144,7 +144,7 @@ class EventItem2 extends StatelessWidget {
             child: Text(
               '${event.priority?.displayName} Priority',
               style: satoshi600S12.copyWith(
-                color: event.priority?.color,
+                color: event.priority?.textColor,
               ),
             ),
           ).fadeInAndMoveFromBottom(),

@@ -179,7 +179,7 @@ extension EventExtension on EventPriority {
     }
   }
 
-  String get description {
+  String get userDescription {
     if (this == EventPriority.high) {
       return 'This is a high-priority event that significantly impacts users and the surrounding environment. Please be cautious and consider finding alternatives, as this event could cause major disruptions or critical issues affecting your daily activities.';
     } else if (this == EventPriority.medium) {
@@ -189,7 +189,17 @@ extension EventExtension on EventPriority {
     }
   }
 
-  Color get color {
+  String get creatorDescription {
+    if (this == EventPriority.high) {
+      return 'This indicates a high-priority event that significantly impacts users and their surroundings. Choose this if the event could cause major disruptions or critical issues affecting daily activities.';
+    } else if (this == EventPriority.medium) {
+      return 'This marks an event with a moderate impact on users and the environment. Use this if it might cause some inconvenience but is not immediately critical.';
+    } else {
+      return 'This indicates a low-priority event with minimal impact on users and the environment. Use this for minor occurrences that should not significantly affect daily life.';
+    }
+  }
+
+  Color get textColor {
     if (this == EventPriority.high) {
       return destructive600;
     } else if (this == EventPriority.medium) {
@@ -209,7 +219,7 @@ extension EventExtension on EventPriority {
     }
   }
 
-  Color get color3 {
+  Color get backgroundColor {
     if (this == EventPriority.high) {
       return destructive100;
     } else if (this == EventPriority.medium) {
@@ -219,7 +229,7 @@ extension EventExtension on EventPriority {
     }
   }
 
-  Color get color4 {
+  Color get borderColor {
     if (this == EventPriority.high) {
       return destructive300;
     } else if (this == EventPriority.medium) {

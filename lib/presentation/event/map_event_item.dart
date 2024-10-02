@@ -1,7 +1,17 @@
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/helpers/page_indicator.dart';
+import 'package:alerthub/models/event/event.dart';
 
-class MapEventItem extends StatelessWidget {
-  const MapEventItem({super.key});
+class MapEventItem extends StatefulWidget {
+  final Event event;
+  const MapEventItem({super.key, required this.event});
+
+  @override
+  State<MapEventItem> createState() => _MapEventItemState();
+}
+
+class _MapEventItemState extends State<MapEventItem> {
+  final pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,25 +28,33 @@ class MapEventItem extends StatelessWidget {
         color: context.backgroundColor,
         borderRadius: BorderRadius.circular(cornersSmall),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          buildFirstSection(),
-          verticalSpacer12,
-          buildSecondSection(context),
-          verticalSpacer12,
-          AppBtn.from(
-            onPressed: () {
-              // context.router.push(const EventDetailsRoute());
-            },
-            text: 'View Event',
-          ),
-        ],
-      ),
+      child: buildBody(),
     );
   }
 
-  Container buildSecondSection(BuildContext context) {
+  Column buildBody() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        buildFirstSection(),
+        verticalSpacer12,
+        buildSecondSection(),
+        verticalSpacer12,
+        buildViewEventButton(),
+      ],
+    );
+  }
+
+  AppBtn buildViewEventButton() {
+    return AppBtn.from(
+      onPressed: () => context.router.push(
+        EventDetailsRoute(event: widget.event),
+      ),
+      text: 'View Event',
+    );
+  }
+
+  Container buildSecondSection() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(space12),
@@ -48,13 +66,13 @@ class MapEventItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(loremIspidiumTitle, style: satoshi600S14)
+          Text(widget.event.name ?? '', style: satoshi600S14)
               .fadeInAndMoveFromBottom(delay: slowDuration),
           verticalSpacer12,
           context.divider,
           verticalSpacer12,
           Text(
-            loremIspidiumMassive,
+            widget.event.description ?? '',
             style: satoshi500S12,
             maxLines: 5,
             overflow: TextOverflow.ellipsis,
@@ -70,7 +88,7 @@ class MapEventItem extends StatelessWidget {
               horizontalSpacer12,
               Expanded(
                 child: Text(
-                  loremIspidiumTitle,
+                  widget.event.location ?? '',
                   style: satoshi500S12,
                   textAlign: TextAlign.end,
                 ),
@@ -82,13 +100,13 @@ class MapEventItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Timeline",
+                "Availiablity",
                 style: satoshi600S12,
               ),
               horizontalSpacer12,
               Expanded(
                 child: Text(
-                  "24 hours",
+                  widget.event.availiablity ?? '',
                   style: satoshi500S12,
                   textAlign: TextAlign.end,
                 ),
@@ -111,7 +129,7 @@ class MapEventItem extends StatelessWidget {
               ),
               horizontalSpacer4,
               Text(
-                '(20)',
+                '(${widget.event.upVote ?? 0})',
                 style: satoshi500S12.copyWith(color: primary800),
               ),
               horizontalSpacer8,
@@ -122,7 +140,7 @@ class MapEventItem extends StatelessWidget {
               ),
               horizontalSpacer4,
               Text(
-                '(15)',
+                '(${widget.event.downVote ?? 0})',
                 style: satoshi500S12.copyWith(color: destructive700),
               ),
             ],
@@ -139,6 +157,7 @@ class MapEventItem extends StatelessWidget {
         color: whiteColor,
         borderRadius: BorderRadius.circular(cornersSmall),
       ),
+      padding: const EdgeInsets.all(space4),
       child: AspectRatio(
         aspectRatio: 2,
         child: Stack(
@@ -152,8 +171,13 @@ class MapEventItem extends StatelessWidget {
             Positioned(
               right: space6,
               left: space6,
-              bottom: space6,
-              child: buildIndicator().fadeIn(delay: slowDuration),
+              bottom: space12,
+              child: Center(
+                child: AppPageIndicator(
+                    count: (widget.event.images ?? []).length,
+                    controller: pageController,
+                    color: blackShade1Color),
+              ).fadeIn(delay: slowDuration),
             ),
           ],
         ),
@@ -161,13 +185,30 @@ class MapEventItem extends StatelessWidget {
     );
   }
 
-  Container buildImage() {
-    return Container(
-      decoration: BoxDecoration(
-        color: blackColor.withOpacity(.1),
-        borderRadius: BorderRadius.circular(space4),
-        border: Border.all(color: neutral200),
-      ),
+  Widget buildImage() {
+    final images = widget.event.images ?? [];
+
+    return PageView.builder(
+      controller: pageController,
+      itemCount: images.length,
+      physics: const BouncingScrollPhysics(),
+      itemBuilder: (ctx, index) {
+        return Container(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            margin: const EdgeInsets.all(space4),
+            decoration: BoxDecoration(
+              color: blackColor.withOpacity(.1),
+              borderRadius: BorderRadius.circular(space4),
+              border: Border.all(
+                color: neutral200,
+                strokeAlign: BorderSide.strokeAlignOutside,
+              ),
+            ),
+            child: AppImage(
+              imageUrl: images[index],
+              fit: BoxFit.cover,
+            ));
+      },
     );
   }
 
@@ -175,67 +216,15 @@ class MapEventItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(space6),
       decoration: BoxDecoration(
-        color: destructive100,
+        color: widget.event.priority?.backgroundColor,
         borderRadius: BorderRadius.circular(space4),
-        border: Border.all(color: destructive300),
+        border: Border.all(
+          color: widget.event.priority?.borderColor ?? neutral300,
+        ),
       ),
       child: Text(
-        'HIGH PRIORITY',
-        style: satoshi600S12.copyWith(color: destructive600),
-      ),
-    );
-  }
-
-  Center buildIndicator() {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 50,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.8),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-          horizontalSpacer4,
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: blackColor.withOpacity(.3),
-              borderRadius: BorderRadius.circular(space4),
-            ),
-          ),
-        ],
+        '${widget.event.priority?.displayName.toUpperCase()} PRIORITY',
+        style: satoshi600S12.copyWith(color: widget.event.priority?.textColor),
       ),
     );
   }

@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:alerthub/common_libs.dart' hide Marker;
+import 'package:alerthub/models/event/event.dart';
 import 'package:alerthub/presentation/event/map_event_item.dart';
 import 'package:async/async.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,39 +20,15 @@ class _MapTabState extends State<MapTab> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      final controller = Get.find<MapController>();
-      controller.getLocationUpdate();
-    });
+    Future.delayed(Duration.zero, () => getData());
   }
 
   getData() async {
-    final controller = Get.find<MapController>();
-
-    if (controller.currentPosition == null) {
-      Future.delayed(oneSecond, () => getData());
-      return;
-    }
-
     try {
-      /*     final data = await $networkUtil.getEventMap(
-        radius: radius,
-        latitude: currentPosition!.latitude,
-        longitude: currentPosition!.longitude,
-      );
-
-      final events = data.data?.events ?? [];
-
-      for (final event in events) {
-        final controller = Get.find<MapController>();
-        controller.addMapEvent(event);
-      } */
+      final controller = Get.find<MapController>();
+      await controller.getData();
     } catch (exception) {
-      context.showErrorSnackBar('An error occurred with fetching the events.');
-      Future.delayed(
-        const Duration(seconds: 2),
-        () => getData(),
-      );
+      context.showErrorSnackBar(exception.toString());
     }
   }
 
@@ -70,49 +49,79 @@ class _MapTabState extends State<MapTab> {
 
   Widget buildBody() {
     return GetX<MapController>(builder: (controller) {
-      final homePosition = controller.userPosition;
-      final events = controller.event;
+      final isLoading = controller.isLoading;
+      final hasError = controller.hasError;
 
-      return GoogleMap(
-        mapType: MapType.normal,
-        rotateGesturesEnabled: false,
-        tiltGesturesEnabled: false,
-        zoomGesturesEnabled: true,
-        zoomControlsEnabled: true,
-        onCameraMove: (cameraPosition) =>
-            updateCameraPosition(controller, cameraPosition),
-        initialCameraPosition: initialCamera,
-        onMapCreated: (data) => controller.setMapController(data),
-        myLocationEnabled: true,
-        markers: {
-          if (homePosition != null)
-            Marker(
-              onTap: () => context
-                  .showInformationSnackBar('This is your current location.'),
-              markerId: const MarkerId('currentLocation'),
-              position: homePosition,
-            ),
-          ...events.map((event) {
-            return Marker(
-                markerId: MarkerId(event.toString()),
-                position: const LatLng(0, 0),
-                onTap: () {
-                  context.showBottomBar(
-                    child: const MapEventItem(),
-                    ignoreBg: true,
-                    ignoreHeight: true,
-                  );
-                });
-          }),
-        },
+      return Stack(
+        children: [
+          buildMap(controller),
+          isLoading
+              ? Container(
+                  alignment: Alignment.center,
+                  color: context.backgroundColor,
+                  child: context.buildLoadingWidget(),
+                )
+              : hasError
+                  ? Container(
+                      alignment: Alignment.center,
+                      color: context.backgroundColor,
+                      child: context.buildErrorWidget(
+                        onRetry: () => getData(),
+                      ),
+                    )
+                  : const SizedBox() // the stack is needed because mapcontroller can only be gotten when the map widget has been rendered.
+        ],
       );
     });
   }
 
+  GoogleMap buildMap(MapController controller) {
+    final homePosition = controller.userPosition;
+    final events = controller.event;
+    return GoogleMap(
+      mapType: MapType.normal,
+      rotateGesturesEnabled: false,
+      tiltGesturesEnabled: false,
+      zoomGesturesEnabled: true,
+      zoomControlsEnabled: true,
+      onCameraMove: (cameraPosition) =>
+          updateCameraPosition(controller, cameraPosition),
+      initialCameraPosition: initialCamera,
+      onMapCreated: (data) => controller.setMapController(data),
+      myLocationEnabled: true,
+      markers: {
+        if (homePosition != null)
+          Marker(
+            onTap: () => context
+                .showInformationSnackBar('This is your current location.'),
+            markerId: const MarkerId('currentLocation'),
+            position: homePosition,
+          ),
+        ...events.map((event) {
+          final id = event.id ?? '';
+          Color color = event.priority?.textColor ?? blackColor;
+          HSVColor hsvColor = HSVColor.fromColor(color);
+          double hue = hsvColor.hue;
+          final lat = event.lat ?? -1;
+          final lng = event.lng ?? -1;
+          return Marker(
+              markerId: MarkerId(id),
+              position: LatLng(lat, lng),
+              icon: BitmapDescriptor.defaultMarkerWithHue(hue),
+              onTap: () {
+                context.showBottomBar(
+                  child: MapEventItem(event: event),
+                  ignoreBg: true,
+                  ignoreHeight: true,
+                );
+              });
+        }),
+      },
+    );
+  }
+
   updateCameraPosition(
-    MapController controller,
-    CameraPosition cameraPosition,
-  ) async {
+      MapController controller, CameraPosition cameraPosition) async {
     if (!controller.considerChangingCenterPosition) return;
 
     try {

@@ -49,17 +49,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     final images = widget.event.images ?? [];
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(space12),
+      padding: const EdgeInsets.all(space4),
       decoration: BoxDecoration(
         color: whiteColor,
         borderRadius: BorderRadius.circular(space4),
         border: Border.all(color: neutral200),
       ),
-      child: Column(
-        children: [
-          AspectRatio(
-            aspectRatio: 2,
-            child: PageView.builder(
+      child: AspectRatio(
+        aspectRatio: 2,
+        child: Stack(
+          children: [
+            PageView.builder(
               controller: pageController,
               itemCount: images.length,
               physics: const BouncingScrollPhysics(),
@@ -81,13 +81,19 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     ));
               },
             ),
-          ),
-          verticalSpacer12,
-          AppPageIndicator(
-              count: images.length,
-              controller: pageController,
-              color: blackShade1Color),
-        ],
+            Positioned(
+              right: space6,
+              left: space6,
+              bottom: space12,
+              child: Center(
+                child: AppPageIndicator(
+                    count: (widget.event.images ?? []).length,
+                    controller: pageController,
+                    color: blackShade1Color),
+              ).fadeIn(delay: slowDuration),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -266,10 +272,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(space12),
       decoration: BoxDecoration(
-        color: widget.event.priority?.color3,
+        color: widget.event.priority?.backgroundColor,
         borderRadius: BorderRadius.circular(space4),
         border: Border.all(
-          color: widget.event.priority?.color4 ?? neutral300,
+          color: widget.event.priority?.borderColor ?? neutral300,
         ),
       ),
       child: Column(
@@ -277,13 +283,14 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         children: [
           Text(
             'Priority (${widget.event.priority?.name.toUpperCase()})',
-            style: satoshi600S14.copyWith(color: widget.event.priority?.color),
+            style:
+                satoshi600S14.copyWith(color: widget.event.priority?.textColor),
           ).fadeInAndMoveFromBottom(),
           verticalSpacer12,
           context.divider,
           verticalSpacer12,
           Text(
-            widget.event.priority?.description ?? '',
+            widget.event.priority?.userDescription ?? '',
             style: satoshi500S12.copyWith(color: widget.event.priority?.color2),
           ).fadeInAndMoveFromBottom(),
         ],

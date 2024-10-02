@@ -21,7 +21,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
     super.initState();
     Future.delayed(Duration.zero, () {
       final controller = Get.find<MapController>();
-      controller.getLocationUpdate();
+      // controller.getLocationUpdate();
     });
   }
 
@@ -93,11 +93,11 @@ class _MapViewScreenState extends State<MapViewScreen> {
                 markerId: MarkerId(event.toString()),
                 position: const LatLng(0, 0),
                 onTap: () {
-                  context.showBottomBar(
+                  /*    context.showBottomBar(
                     child: const MapEventItem(),
                     ignoreBg: true,
                     ignoreHeight: true,
-                  );
+                  ); */
                 });
           }),
         },

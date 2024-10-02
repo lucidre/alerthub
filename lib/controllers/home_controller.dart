@@ -208,8 +208,6 @@ class HomeController extends GetxController {
         AppPreferences.setUserData(user: user);
         _user(user);
       }
-    } catch (_) {
-      getUser();
-    }
+    } catch (_) {}
   }
 }

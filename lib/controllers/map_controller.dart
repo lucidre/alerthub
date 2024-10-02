@@ -1,32 +1,42 @@
 import 'dart:math';
+import 'package:alerthub/api/network_utils.dart';
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/models/event/event.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class MapController extends GetxController {
-  final _location = Location();
+  final searchRadius = 10000.0;
+
   StreamSubscription<LocationData>? locationStream;
 
   final RxBool _considerChangingCenterPosition = false.obs;
   final RxBool _hasZoomedToHome = false.obs;
   final RxBool _isLoading = true.obs;
   final RxBool _hasError = true.obs;
+  final RxBool _hasInitLocationListener = false.obs;
 
   final Rxn<GoogleMapController> _mapController = Rxn();
 
   final Rxn<LatLng> _userPosition = Rxn();
+
   final Rxn<LatLng> _currentPosition = Rxn();
   final Rxn<LatLng> _newPosition = Rxn();
 
-  final RxSet<dynamic> _events = <dynamic>{}.obs;
+  final RxSet<Event> _events = <Event>{}.obs;
 
   LatLng? get userPosition => _userPosition.value;
   LatLng? get newPosition => _newPosition.value;
   LatLng? get currentPosition => _currentPosition.value;
+
+  bool get isLoading => _isLoading.value;
+  bool get hasError => _hasError.value;
+
   bool get hasZoomedToHome => _hasZoomedToHome.value;
   bool get considerChangingCenterPosition =>
       _considerChangingCenterPosition.value;
-  Set<dynamic> get event => _events;
+
+  Set<Event> get event => _events;
   GoogleMapController? get mapController => _mapController.value;
 
   setMapController(controller) => _mapController.value = controller;
@@ -34,49 +44,58 @@ class MapController extends GetxController {
 
   addMapEvent(value) {
     _events.add(value);
-
     update();
   }
 
-  getLocationUpdate() async {
+  Future<void> getLocationUpdate() async {
+    if (_hasInitLocationListener.value) {
+      return;
+    }
+    try {
+      final controller = Get.find<LocationController>();
+      await controller.initLocationUpdate();
+
+      if (controller.userPosition != null) {
+        _userPosition.value = controller.userPosition;
+        zoomToHome(controller.userPosition!);
+      }
+
+      controller.userPositionRxn?.listen((current) {
+        if (current != null) {
+          final latLng = LatLng(current.latitude, current.longitude);
+          setUserPosition(latLng);
+          zoomToHome(latLng);
+        }
+      });
+
+      await Future.delayed(const Duration(seconds: 1));
+      _hasInitLocationListener(true);
+    } catch (_) {}
+  }
+
+  getData() async {
     _isLoading(true);
     _hasError(false);
 
     try {
-      bool enabled = await _location.serviceEnabled();
+      await getLocationUpdate();
 
-      if (enabled) {
-        enabled = await _location.requestService();
-        if (!enabled) {
-          throw 'Location services are disabled/turned off.';
-        }
-      } else {
-        throw 'Location services are disabled/turned off.';
+      if (currentPosition == null) {
+        Future.delayed(const Duration(seconds: 1), () => getData());
+        return;
       }
 
-      PermissionStatus permission = await _location.hasPermission();
-
-      if (permission == PermissionStatus.denied) {
-        permission = await _location.requestPermission();
-        if (permission == PermissionStatus.denied) {
-          throw 'Location permissions are denied';
-        }
-      }
-
-      if (permission == PermissionStatus.deniedForever) {
-        throw 'Location permissions are permanently denied, we cannot request permissions.';
-      }
-      locationStream?.cancel();
-
-      locationStream = _location.onLocationChanged.listen(
-        (current) {
-          if (current.latitude != null && current.longitude != null) {
-            final latLng = LatLng(current.latitude!, current.longitude!);
-            setUserPosition(latLng);
-            zoomToHome(latLng);
-          }
-        },
+      final data = await $networkUtil.map(
+        radius: searchRadius,
+        lat: currentPosition!.latitude,
+        lng: currentPosition!.longitude,
       );
+
+      final events = data.data ?? [];
+
+      for (final event in events) {
+        addMapEvent(event);
+      }
       _isLoading(false);
     } catch (exception) {
       _hasError(true);
@@ -89,12 +108,12 @@ class MapController extends GetxController {
     if (hasZoomedToHome) return;
 
     if (mapController != null) {
-      _hasZoomedToHome(true);
       _currentPosition(latLng);
       _newPosition(latLng);
       final latLngZoom = CameraUpdate.newLatLngZoom(latLng, 15);
       await mapController!.animateCamera(latLngZoom);
       _considerChangingCenterPosition(true);
+      _hasZoomedToHome(true);
     } else {
       Future.delayed(
         const Duration(seconds: 2),
@@ -110,7 +129,6 @@ class MapController extends GetxController {
 
     _newPosition(position);
 
-    double searchRadius = 10000;
     const earthRadius = 6371000;
 
     final currentPositionLat = currentPosition!.latitude;

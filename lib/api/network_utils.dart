@@ -203,6 +203,31 @@ class NetworkUtil {
     }
   }
 
+  Future<Events> map(
+      {required double radius,
+      required double lat,
+      required double lng}) async {
+    try {
+      final response = await $get('event/map?radius=$radius&lng=$lng&lat=$lng');
+
+      if (response.isError) {
+        return Future.error(response.message);
+      }
+      return Events.fromMap(response.data);
+    } on SocketException {
+      return Future.error('No network connection.');
+    } on http.ClientException {
+      return Future.error('No network connection.');
+    } catch (exception) {
+      if (exception
+          .toString()
+          .contains('ClientException with SocketException')) {
+        return Future.error('No network connection.');
+      }
+      return Future.error(exception.toString());
+    }
+  }
+
   Future<Events> ongoing(int page) async {
     try {
       final response = await $get('event/home?page=$page');

@@ -65,6 +65,10 @@ const String subscribeSuccess = 'assets/images/subscribe_success.png';
 const String shopUpdate = 'assets/images/shop_update.png';
 const String transporterAssigned = 'assets/images/transporter_assigned.png';
 
+const String radarLottie = 'assets/lottie/radar.json';
 const String errorLottie = 'assets/lottie/error.json';
 const String noDataLottie = 'assets/lottie/no_data.json';
 const String lockLottie = 'assets/lottie/lock.json';
+const String logoutLottie = 'assets/lottie/logout.json';
+const String deleteLottie = 'assets/lottie/delete.json';
+const String loadingLottie = 'assets/lottie/loading.json';

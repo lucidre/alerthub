@@ -4,7 +4,7 @@ import 'package:alerthub/models/event/event.dart';
 
 @RoutePage()
 class EventDetailsScreen extends StatefulWidget {
-  final EventModel event;
+  final Event event;
 
   const EventDetailsScreen({
     super.key,
@@ -28,6 +28,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             children: [
               buildImage(),
               verticalSpacer16,
+              buildDescription(),
+              verticalSpacer16,
               buildPriority(),
               verticalSpacer16,
               buildLocation(),
@@ -35,8 +37,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               buildAvailiablility(),
               verticalSpacer16,
               buildValidity(),
-              verticalSpacer16,
-              buildDescription(),
               verticalSpacer32 * 3
             ],
           ),
@@ -283,7 +283,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           context.divider,
           verticalSpacer12,
           Text(
-            loremIspidiumLong,
+            widget.event.priority?.description ?? '',
             style: satoshi500S12.copyWith(color: widget.event.priority?.color2),
           ).fadeInAndMoveFromBottom(),
         ],

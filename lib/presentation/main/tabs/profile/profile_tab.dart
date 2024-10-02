@@ -15,14 +15,13 @@ class _ProfileTabState extends State<ProfileTab> {
   void onRefresh() async {
     final controller = Get.find<ProfileController>();
 
-    controller.getUpData();
-    controller.getUpcData();
-
-    Future.delayed(const Duration(seconds: 2), () {
-      try {
-        refreshController.refreshCompleted();
-      } catch (_) {}
-    });
+    await Future.wait<dynamic>(
+      [
+        controller.getUpData(),
+        controller.getUpcData(),
+      ],
+    );
+    refreshController.refreshCompleted();
   }
 
   buildAppBar() {

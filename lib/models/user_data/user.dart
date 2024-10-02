@@ -2,18 +2,20 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 
-class UserModel {
+class User {
+  String? mongoId;
+  String? userId;
   String? fullName;
   String? email;
-  String? uid;
   String? phoneNumber;
   String? country;
   String? imageUrl;
 
-  UserModel({
+  User({
+    this.mongoId,
+    this.userId,
     this.fullName,
     this.email,
-    this.uid,
     this.phoneNumber,
     this.country,
     this.imageUrl,
@@ -21,49 +23,55 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(fullName: $fullName, email: $email, uid: $uid, phoneNumber: $phoneNumber, country: $country, imageUrl: $imageUrl)';
+    return 'Data(mongoId: $mongoId, userId: $userId, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, country: $country, imageUrl: $imageUrl)';
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> data) => UserModel(
+  factory User.fromMap(Map<String, dynamic> data) => User(
+        mongoId: data['mongoId'] as String?,
+        userId: data['userId'] as String?,
         fullName: data['fullName'] as String?,
         email: data['email'] as String?,
-        uid: data['uid'] as String?,
         phoneNumber: data['phoneNumber'] as String?,
         country: data['country'] as String?,
         imageUrl: data['imageUrl'] as String?,
       );
 
   Map<String, dynamic> toMap() => {
+        'mongoId': mongoId,
+        'userId': userId,
         'fullName': fullName,
         'email': email,
-        'uid': uid,
         'phoneNumber': phoneNumber,
         'country': country,
         'imageUrl': imageUrl,
       };
 
   /// `dart:convert`
-  /// Parses the string and returns the resulting Json object as [Usermodels].
-  factory UserModel.fromJson(String data) {
-    return UserModel.fromMap(json.decode(data) as Map<String, dynamic>);
+  ///
+  /// Parses the string and returns the resulting Json object as [User].
+  factory User.fromJson(String data) {
+    return User.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
-  /// Converts [Usermodels] to a JSON string.
+  ///
+  /// Converts [User] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  UserModel copyWith({
+  User copyWith({
+    String? mongoId,
+    String? userId,
     String? fullName,
     String? email,
-    String? uid,
     String? phoneNumber,
     String? country,
     String? imageUrl,
   }) {
-    return UserModel(
+    return User(
+      mongoId: mongoId ?? this.mongoId,
+      userId: userId ?? this.userId,
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
-      uid: uid ?? this.uid,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       country: country ?? this.country,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -73,16 +81,17 @@ class UserModel {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    if (other is! UserModel) return false;
+    if (other is! User) return false;
     final mapEquals = const DeepCollectionEquality().equals;
-    return mapEquals(other.toJson(), toJson());
+    return mapEquals(other.toMap(), toMap());
   }
 
   @override
   int get hashCode =>
+      mongoId.hashCode ^
+      userId.hashCode ^
       fullName.hashCode ^
       email.hashCode ^
-      uid.hashCode ^
       phoneNumber.hashCode ^
       country.hashCode ^
       imageUrl.hashCode;

@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:alerthub/api/firebase_util.dart';
+import 'package:alerthub/api/network_utils.dart';
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/models/event/event.dart';
 import 'package:alerthub/presentation/event/event_item.dart';
@@ -20,8 +20,9 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final searchController = TextEditingController();
-  final List<EventModel> events = [];
+  final List<Event> events = [];
 
+  int page = 0;
   bool isLoading = true;
   bool hasError = false;
   bool allDataLoaded = false;
@@ -65,6 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   getData() async {
+    page = 0;
     isLoading = true;
     hasError = false;
     events.clear();
@@ -72,11 +74,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
     try {
       final search = searchController.text.trim();
-      final data = await $firebaseUtil.searchEvents(search);
-      events.addAll(data);
+      final data = await $networkUtil.search(search, page);
+      final list = data.data ?? [];
+      events.addAll(list);
       if (isRefreshing) {
         refreshController.refreshCompleted();
       }
+      allDataLoaded = list.isEmpty;
     } catch (exception) {
       hasError = true;
       context.showErrorSnackBar(exception.toString());
@@ -90,16 +94,16 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   getOldData() async {
+    page++;
     oldDataLoading = true;
     progressStream.add(true);
 
     try {
-      final data = await $firebaseUtil.searchEvents(
-        searchController.text.trim(),
-        events.last.createdAt,
-      );
-      allDataLoaded = data.isEmpty;
-      events.addAll(data);
+      final search = searchController.text.trim();
+      final data = await $networkUtil.search(search, page);
+      final list = data.data ?? [];
+      allDataLoaded = list.isEmpty;
+      events.addAll(list);
     } catch (exception) {
       allDataLoaded = true;
     }
@@ -123,7 +127,7 @@ class _SearchScreenState extends State<SearchScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: context.top),
+            SizedBox(height: context.top + space12),
             buildHeader().fadeInAndMoveFromBottom(),
             verticalSpacer12,
             Expanded(
@@ -177,7 +181,7 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: const EdgeInsets.all(0),
       itemBuilder: (ctx, index) {
         return EventItem(
-          event: EventModel(),
+          event: const Event(),
           shimmerEnabled: true,
           onPressed: () {},
         );
@@ -187,7 +191,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-//TODO On refesh being called on list drag.
   Widget buildList() {
     return ListView.builder(
       controller: scrollController,
@@ -215,25 +218,7 @@ class _SearchScreenState extends State<SearchScreen> {
           buildBackButton().fadeInAndMoveFromBottom(),
           horizontalSpacer12,
           Expanded(child: buildSearchField().fadeInAndMoveFromBottom()),
-          horizontalSpacer12,
-          buildFilterButton().fadeInAndMoveFromBottom(),
         ],
-      ),
-    );
-  }
-
-  Container buildFilterButton() {
-    return Container(
-      width: 46,
-      height: 46,
-      decoration: BoxDecoration(
-        color: whiteColor,
-        border: Border.all(color: neutral300),
-        borderRadius: BorderRadius.circular(space4),
-      ),
-      child: const Icon(
-        CupertinoIcons.slider_horizontal_3,
-        color: blackColor,
       ),
     );
   }

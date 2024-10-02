@@ -1,32 +1,33 @@
 import 'dart:convert';
+import 'dart:ui';
 
-import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/constants/style.dart';
 import 'package:collection/collection.dart';
 
-class EventModel {
-  String? id;
-  String? name;
-  String? description;
-  String? creatorId;
-  String? location;
-  double? lat;
-  double? long;
-  List<String>? images;
-  EventPriority? priority;
-  int? upVote;
-  int? downVote;
-  String? availiablity;
-  int? createdAt;
-  int? updatedAt;
+class Event {
+  final String? id;
+  final String? name;
+  final String? description;
+  final String? creatorId;
+  final String? location;
+  final double? lat;
+  final double? lng;
+  final List<String>? images;
+  final EventPriority? priority;
+  final int? upVote;
+  final int? downVote;
+  final String? availiablity;
+  final int? createdAt;
+  final int? updatedAt;
 
-  EventModel({
+  const Event({
     this.id,
     this.name,
     this.description,
     this.creatorId,
     this.location,
     this.lat,
-    this.long,
+    this.lng,
     this.images,
     this.priority,
     this.upVote,
@@ -38,67 +39,67 @@ class EventModel {
 
   @override
   String toString() {
-    return 'Event(id: $id, name: $name, description: $description, creatorId: $creatorId, location: $location, lat: $lat, long: $long, images: $images, priority: $priority, upVote: $upVote, downVote: $downVote, availiablity: $availiablity, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Datum(id: $id, name: $name, description: $description, creatorId: $creatorId, location: $location, lat: $lat, lng: $lng, images: $images, priority: $priority, upVote: $upVote, downVote: $downVote, availiablity: $availiablity, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
-  factory EventModel.fromMap(Map<String, dynamic> data) => EventModel(
+  factory Event.fromMap(Map<String, dynamic> data) => Event(
         id: data['id'] as String?,
         name: data['name'] as String?,
         description: data['description'] as String?,
-        creatorId: data['creator_id'] as String?,
+        creatorId: data['creatorId'] as String?,
         location: data['location'] as String?,
         lat: (data['lat'] as num?)?.toDouble(),
-        long: (data['long'] as num?)?.toDouble(),
-        images: (data['images'] as List<dynamic>?)?.map((e) {
-          return e.toString();
-        }).toList(),
-        priority: data['priority'] != null
-            ? priorityFromName(data['priority'])
-            : null,
-        upVote: data['up_vote'] as int?,
-        downVote: data['down_vote'] as int?,
+        lng: (data['lng'] as num?)?.toDouble(),
+        images: (data['images'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList(),
+        priority: data['priority'] == null
+            ? null
+            : priorityFromName(data['priority']),
+        upVote: data['upVote'] as int?,
+        downVote: data['downVote'] as int?,
         availiablity: data['availiablity'] as String?,
-        createdAt: data['created_at'] as int?,
-        updatedAt: data['updated_at'] as int?,
+        createdAt: data['createdAt'] as int?,
+        updatedAt: data['updatedAt'] as int?,
       );
 
   Map<String, dynamic> toMap() => {
         'id': id,
         'name': name,
         'description': description,
-        'creator_id': creatorId,
+        'creatorId': creatorId,
         'location': location,
         'lat': lat,
-        'long': long,
+        'lng': lng,
         'images': images,
         'priority': priority?.name,
-        'up_vote': upVote,
-        'down_vote': downVote,
+        'upVote': upVote,
+        'downVote': downVote,
         'availiablity': availiablity,
-        'created_at': createdAt,
-        'updated_at': updatedAt,
+        'createdAt': createdAt,
+        'updatedAt': updatedAt,
       };
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [EventModel].
-  factory EventModel.fromJson(String data) {
-    return EventModel.fromMap(json.decode(data) as Map<String, dynamic>);
+  /// Parses the string and returns the resulting Json object as [Event].
+  factory Event.fromJson(String data) {
+    return Event.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [EventModel] to a JSON string.
+  /// Converts [Event] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  EventModel copyWith({
+  Event copyWith({
     String? id,
     String? name,
     String? description,
     String? creatorId,
     String? location,
     double? lat,
-    double? long,
+    double? lng,
     List<String>? images,
     EventPriority? priority,
     int? upVote,
@@ -107,14 +108,14 @@ class EventModel {
     int? createdAt,
     int? updatedAt,
   }) {
-    return EventModel(
+    return Event(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
       creatorId: creatorId ?? this.creatorId,
       location: location ?? this.location,
       lat: lat ?? this.lat,
-      long: long ?? this.long,
+      lng: lng ?? this.lng,
       images: images ?? this.images,
       priority: priority ?? this.priority,
       upVote: upVote ?? this.upVote,
@@ -128,7 +129,7 @@ class EventModel {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    if (other is! EventModel) return false;
+    if (other is! Event) return false;
     final mapEquals = const DeepCollectionEquality().equals;
     return mapEquals(other.toMap(), toMap());
   }
@@ -141,7 +142,7 @@ class EventModel {
       creatorId.hashCode ^
       location.hashCode ^
       lat.hashCode ^
-      long.hashCode ^
+      lng.hashCode ^
       images.hashCode ^
       priority.hashCode ^
       upVote.hashCode ^
@@ -175,6 +176,16 @@ extension EventExtension on EventPriority {
       return 'Medium';
     } else {
       return 'Low';
+    }
+  }
+
+  String get description {
+    if (this == EventPriority.high) {
+      return 'This is a high-priority event that significantly impacts users and the surrounding environment. Please be cautious and consider finding alternatives, as this event could cause major disruptions or critical issues affecting your daily activities.';
+    } else if (this == EventPriority.medium) {
+      return 'This event has a moderate impact on users and the environment. While it may cause some inconvenience, it is not immediately critical. Please stay informed and plan accordingly to minimize any potential disruptions to your daily routine.';
+    } else {
+      return 'This is a low-priority event with minimal impact on users and the environment. It is a minor occurrence that should not significantly affect your daily life. You can address it at your convenience without major concerns.';
     }
   }
 

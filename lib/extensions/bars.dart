@@ -82,15 +82,11 @@ extension DeviceBar on BuildContext {
       pageBuilder: (_, __, ___) => Dialog(
         backgroundColor: backgroundColor,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(cornersMedium),
-          ),
-        ),
+            borderRadius: BorderRadius.all(
+          Radius.circular(space4),
+        )),
         elevation: 3,
-        child: Padding(
-          padding: const EdgeInsets.all(kDefaultPadding),
-          child: child.fadeInAndMoveFromBottom(),
-        ),
+        child: child.fadeInAndMoveFromBottom(),
       ),
       transitionBuilder: (_, anim, __, child) => FadeTransition(
         opacity: Tween(begin: 0.0, end: 1.0).animate(anim),
@@ -150,7 +146,7 @@ extension DeviceBar on BuildContext {
         Transform.scale(
           scale: 1.2,
           child: Lottie.asset(
-            "loadingLottie",
+            loadingLottie,
             animate: true,
             repeat: true,
             reverse: true,
@@ -177,9 +173,9 @@ extension DeviceBar on BuildContext {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: isMini ? MainAxisSize.min : MainAxisSize.max,
       children: [
-        verticalSpacer8,
+        if (isMini) verticalSpacer8,
         Transform.scale(
-          scale: 1.2,
+          scale: isMini ? 1 : 1.2,
           child: Lottie.asset(
             errorLottie,
             animate: true,
@@ -208,24 +204,23 @@ extension DeviceBar on BuildContext {
           isSecondary: $isDarkMode,
           text: button ?? 'Retry',
         ),
-        if (isMini) verticalSpacer32
+        if (isMini) verticalSpacer8
       ],
     );
   }
 
-  Widget buildNoDataWidget({String? title, String? body, bool isMini = false}) {
+  Widget buildNoDataWidget(
+      {String? lottie, String? title, String? body, bool isMini = false}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: isMini ? MainAxisSize.min : MainAxisSize.max,
       children: [
-        const SizedBox(
-          width: double.infinity,
-        ),
-        verticalSpacer8,
+        const SizedBox(width: double.infinity),
+        if (isMini) verticalSpacer8,
         Transform.scale(
-          scale: 1.2,
+          scale: isMini ? 1 : 1.2,
           child: Lottie.asset(
-            noDataLottie,
+            lottie ?? noDataLottie,
             animate: true,
             repeat: true,
             reverse: true,
@@ -234,7 +229,7 @@ extension DeviceBar on BuildContext {
             fit: BoxFit.contain,
           ),
         ).fadeInAndMoveFromBottom(),
-        verticalSpacer12,
+        verticalSpacer8,
         Text(
           title ?? 'No Data',
           style: satoshi600S20,
@@ -243,7 +238,6 @@ extension DeviceBar on BuildContext {
           body ?? 'There is currently no data to display.',
           style: satoshi500S14,
         ).fadeInAndMoveFromBottom(),
-        verticalSpacer16,
         if (isMini) verticalSpacer32
       ],
     );

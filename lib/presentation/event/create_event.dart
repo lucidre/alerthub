@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:alerthub/api/firebase_util.dart';
+import 'package:alerthub/api/network_utils.dart';
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/models/event/event.dart';
 import 'package:flutter/cupertino.dart';
@@ -79,7 +80,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       final name = nameController.text.trim();
       final description = descriptionController.text.trim();
       final location = locationController.text.trim();
-      final createdAt = DateTime.now().millisecondsSinceEpoch;
+
       List<String> imageUrls = [];
 
       if (images.isNotEmpty) {
@@ -89,16 +90,15 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         );
       }
 
-      await $firebaseUtil.uploadEvent(
-        eventId: eventId,
+      await $networkUtil.createEvent(
         name: name,
         description: description,
         location: location,
-        priority: selectedPriority!,
-        availiablity: selectedAvailiablity!,
+        priority: selectedPriority?.name ?? '',
+        lat: -1,
+        lng: -1,
+        availablity: selectedAvailiablity!,
         images: imageUrls,
-        createdAt: createdAt,
-        updatedAt: createdAt,
       );
       context.showSuccessSnackBar('Your event has been successfully created');
       context.router.maybePop();

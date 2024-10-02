@@ -1,4 +1,7 @@
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/presentation/settings/account_delete_bar.dart';
+import 'package:alerthub/presentation/settings/change_password_bar.dart';
+import 'package:alerthub/presentation/settings/logout_bar.dart';
 import 'package:flutter/cupertino.dart';
 
 @RoutePage()
@@ -49,9 +52,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               verticalSpacer12,
               context.divider,
               verticalSpacer12,
-              const SettingsItem(
+              SettingsItem(
                 title: 'Change Password',
                 icon: Icons.password_rounded,
+                onPressed: () {
+                  context.$showGeneralDialog(
+                    barrierLabel: "Delete Bar",
+                    child: const ChangePasswordBar(),
+                  );
+                },
               ),
               verticalSpacer12,
               context.divider,
@@ -63,18 +72,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
               verticalSpacer12,
               context.divider,
               verticalSpacer12,
-              const SettingsItem(
+              SettingsItem(
                 title: 'Logout',
                 icon: Icons.logout_rounded,
                 color: destructive600,
+                onPressed: () => context.$showGeneralDialog(
+                  child: const LogoutBar(),
+                  barrierLabel: "Logout Bar",
+                  dismissible: false,
+                ),
               ),
               verticalSpacer12,
               context.divider,
               verticalSpacer12,
-              const SettingsItem(
+              SettingsItem(
                 title: 'Delete Account',
                 icon: Icons.delete_outline_rounded,
                 color: destructive600,
+                onPressed: () {
+                  context.$showGeneralDialog(
+                    barrierLabel: "Delete Bar",
+                    child: const AccountDeleteBar(),
+                  );
+                },
               ),
             ],
           ),
@@ -99,38 +119,44 @@ class SettingsItem extends StatelessWidget {
   final String title;
   final IconData icon;
   final Color? color;
+  final VoidCallback? onPressed;
 
   const SettingsItem({
     super.key,
     required this.title,
     required this.icon,
     this.color,
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(space12),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: color ?? context.textColor,
-          ),
-          horizontalSpacer12,
-          Expanded(
-            child: Text(
-              title,
-              style: satoshi500S14.copyWith(color: color),
+    return InkWell(
+      splashColor: Colors.transparent,
+      onTap: () => onPressed?.call(),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(space12),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: color ?? context.textColor,
             ),
-          ),
-          horizontalSpacer12,
-          Icon(
-            Icons.arrow_right_rounded,
-            color: color ?? context.textColor,
-          ),
-        ],
+            horizontalSpacer12,
+            Expanded(
+              child: Text(
+                title,
+                style: satoshi500S14.copyWith(color: color),
+              ),
+            ),
+            horizontalSpacer12,
+            Icon(
+              Icons.arrow_right_rounded,
+              color: color ?? context.textColor,
+            ),
+          ],
+        ),
       ),
     ).fadeInAndMoveFromBottom();
   }

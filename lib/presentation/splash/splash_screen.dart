@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:alerthub/api/firebase_util.dart';
+import 'package:alerthub/api/network_utils.dart';
 import 'package:alerthub/common_libs.dart';
 
 @RoutePage()
@@ -20,6 +21,8 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    $networkUtil.wakeUp();
+    Get.find<HomeController>().initUserData();
     setUpAnimation();
   }
 

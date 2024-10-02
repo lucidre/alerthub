@@ -1,5 +1,5 @@
 import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/models/user/user_model.dart';
+import 'package:alerthub/models/user_data/user.dart';
 import 'package:flutter/cupertino.dart';
 
 class UserProfileCard extends StatefulWidget {
@@ -81,6 +81,7 @@ class _UserProfileCardState extends State<UserProfileCard> {
 
   buildError() {
     return Container(
+      alignment: Alignment.center,
       constraints: const BoxConstraints(minHeight: 110),
       child: Column(
         children: [
@@ -100,7 +101,7 @@ class _UserProfileCardState extends State<UserProfileCard> {
     );
   }
 
-  buildBody(UserModel? user) {
+  buildBody(User? user) {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () => context.router.push(const EditProfileRoute()),

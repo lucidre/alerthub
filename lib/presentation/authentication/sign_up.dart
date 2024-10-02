@@ -94,8 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         country: country,
         password: password,
       );
-      context.showInformationSnackBar(
-          'Account created successfully. Kindly verify your account and login.');
+      context.showInformationSnackBar('Account created successfully.');
       context.router.replace(const SignInRoute());
     } catch (exception) {
       context.showErrorSnackBar(exception.toString());

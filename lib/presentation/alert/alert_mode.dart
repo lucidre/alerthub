@@ -25,7 +25,6 @@ class _AlertModeScreenState extends State<AlertModeScreen> {
     return AppScaffold(
       enableInternetCheck: false,
       appBar: buildAppBar(),
-      backgroundColor: context.backgroundColor,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Padding(

@@ -14,8 +14,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final controller = PageController();
-  int index = 0;
+  final pageController = PageController();
+
   final pages = [
     const HomeTab(),
     const MapTab(),
@@ -24,12 +24,20 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () {
+      Get.find<BottomBarController>().indexRx.listen((index) {
+        pageController.animateToPage(
+          index,
+          duration: fastDuration,
+          curve: Curves.easeIn,
+        );
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      enableInternetCheck: false, // TODO remove.
       floatingActionButton: buildFAB(),
       body: buildBody(),
       bottomNavigationBar: buildBottomBar(),
@@ -38,55 +46,54 @@ class _MainScreenState extends State<MainScreen> {
 
   buildBody() {
     return PageView.builder(
-      controller: controller,
+      controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (_, index) => pages[index],
     );
   }
 
   buildBottomBar() {
-    return BottomNavBar(
-      items: barItems,
-      currentIndex: index,
-      onTap: (index) {
-        controller.animateToPage(
-          index,
-          duration: fastDuration,
-          curve: Curves.easeIn,
-        );
-        setState(() {
-          this.index = index;
-        });
-      },
-    );
+    return GetX<BottomBarController>(builder: (controller) {
+      final index = controller.index;
+      return BottomNavBar(
+        items: barItems,
+        currentIndex: index,
+        onTap: (index) {
+          controller.setIndex(index);
+        },
+      );
+    });
   }
 
   buildFAB() {
-    return TweenAnimationBuilder<double>(
-        tween: Tween(
-          end: index == 0 ? 1.0 : 0.0,
-        ),
-        curve: Curves.easeIn,
-        duration: medDuration,
-        builder: (context, value, _) {
-          return Transform.translate(
-            offset: Offset(0, (1 - value) * 15),
-            child: IgnorePointer(
-              ignoring: index != 0,
-              child: Opacity(
-                opacity: value > .5 ? 1 : value,
-                child: FloatingActionButton(
-                  onPressed: () =>
-                      context.router.push(const CreateEventRoute()),
-                  backgroundColor: blackShade1Color,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(space4),
+    return GetX<BottomBarController>(builder: (controller) {
+      final index = controller.index;
+      return TweenAnimationBuilder<double>(
+          tween: Tween(
+            end: index == 0 ? 1.0 : 0.0,
+          ),
+          curve: Curves.easeIn,
+          duration: medDuration,
+          builder: (context, value, _) {
+            return Transform.translate(
+              offset: Offset(0, (1 - value) * 15),
+              child: IgnorePointer(
+                ignoring: index != 0,
+                child: Opacity(
+                  opacity: value > .5 ? 1 : value,
+                  child: FloatingActionButton(
+                    onPressed: () =>
+                        context.router.push(const CreateEventRoute()),
+                    backgroundColor: blackShade1Color,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(space4),
+                    ),
+                    child: const Icon(Icons.add_rounded),
                   ),
-                  child: const Icon(Icons.add_rounded),
                 ),
               ),
-            ),
-          );
-        });
+            );
+          });
+    });
   }
 }

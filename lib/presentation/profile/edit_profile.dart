@@ -3,9 +3,10 @@
 import 'dart:io';
 
 import 'package:alerthub/api/firebase_util.dart';
+import 'package:alerthub/api/network_utils.dart';
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/helpers/select_country.dart';
-import 'package:alerthub/models/user/user_model.dart';
+import 'package:alerthub/models/user_data/user.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,13 +21,14 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   Country? selectedCountry;
-  bool isLoading = true;
+  bool isFetching = true;
+  bool isLoading = false;
   bool hasError = false;
   String? imagePath;
   bool isImageFromFile = true;
   final imagePicker = ImagePicker();
 
-  UserModel? model;
+  User? model;
   final emailController = TextEditingController();
   final fullNameController = TextEditingController();
   final phoneNumberController = TextEditingController();
@@ -44,11 +46,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   getData() async {
     setState(() {
-      isLoading = true;
+      isFetching = true;
       hasError = false;
     });
     try {
-      model = await $firebaseUtil.getUserProfile();
+      final data = await $networkUtil.getUser();
+      model = data.data;
       emailController.text = model?.email ?? '';
       fullNameController.text = model?.fullName ?? '';
       phoneNumberController.text = model?.phoneNumber ?? '';
@@ -70,7 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       hasError = true;
     }
     setState(() {
-      isLoading = false;
+      isFetching = false;
     });
   }
 
@@ -120,13 +123,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       }
 
-      await $firebaseUtil.setUserData(
+      await $networkUtil.updateUser(
         fullName: fullName,
         email: email,
         phoneNumber: phoneNumber,
         country: country,
         imageUrl: imageUrl,
       );
+      Get.find<HomeController>().getUser();
       context.showSuccessSnackBar('Your profile has been successfully edited.');
       context.router.maybePop();
     } catch (exception) {
@@ -146,10 +150,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: const EdgeInsets.all(space12),
         child: Form(
           key: formKey,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: buildBody(),
-          ),
+          child: isFetching
+              ? context.buildLoadingWidget()
+              : hasError
+                  ? context.buildErrorWidget(onRetry: () => getData())
+                  : SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: buildBody(),
+                    ),
         ),
       ),
     );
@@ -209,7 +217,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: BoxDecoration(
                   color: blackShade1Color.withOpacity(.1),
                   borderRadius: BorderRadius.circular(space4),
-                  border: Border.all(color: neutral300),
+                  border: Border.all(
+                    color: neutral300,
+                    strokeAlign: BorderSide.strokeAlignOutside,
+                  ),
                 ),
                 child: imagePath == null
                     ? const Icon(

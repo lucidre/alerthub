@@ -20,5 +20,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: EditProfileRoute.page),
         AutoRoute(page: EventDetailsRoute.page),
         AutoRoute(page: MapViewRoute.page),
+        AutoRoute(page: OngoingEventsRoute.page),
+        AutoRoute(page: NearbyEventsRoute.page),
       ];
 }

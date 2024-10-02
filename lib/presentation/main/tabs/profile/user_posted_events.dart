@@ -101,7 +101,7 @@ class _UserPostedEventsState extends State<UserPostedEvents> {
       padding: const EdgeInsets.all(0),
       itemBuilder: (ctx, index) {
         return EventItem(
-          event: EventModel(),
+          event: const Event(),
           shimmerEnabled: true,
           onPressed: () {},
         );
@@ -111,7 +111,7 @@ class _UserPostedEventsState extends State<UserPostedEvents> {
     );
   }
 
-  buildList(List<EventModel> events) {
+  buildList(List<Event> events) {
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.all(0),

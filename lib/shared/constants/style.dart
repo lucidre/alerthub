@@ -54,7 +54,7 @@ const Color primary600 = Color(0xFF129642);
 const Color primary800 = Color(0xFF166534);
 const Color primary900 = Color(0xFF14532D);
 
-List<Color> gradientColorss = [
+List<Color> gradientColors = [
   const Color(0xFF333333),
   const Color(0xFF2C2929),
 ];

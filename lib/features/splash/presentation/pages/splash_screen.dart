@@ -145,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
     return Container(
       decoration: BoxDecoration(
         gradient: RadialGradient(
-          colors: gradientColorss,
+          colors: gradientColors,
         ),
       ),
     );

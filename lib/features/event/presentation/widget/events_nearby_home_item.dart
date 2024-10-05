@@ -107,7 +107,7 @@ class EventsNearbyHomeItem extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Events Near You',
+              context.localization?.nearbyEvents ?? '',
               style: satoshi600S12,
             ),
           ),
@@ -115,7 +115,7 @@ class EventsNearbyHomeItem extends StatelessWidget {
           AppBtn.basic(
             onPressed: () => context.router.push(const EventsNearbyRoute()),
             child: Text(
-              'See all',
+              context.localization?.seeAll ?? '',
               style: satoshi500S12,
             ),
           )

@@ -37,9 +37,6 @@ android {
     }
 
     defaultConfig {
-         def apiKey = localProperties.getProperty('apiKey') 
-        manifestPlaceholders = [apiKey: apiKey]
-
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.alerthub"
         minSdk = 23

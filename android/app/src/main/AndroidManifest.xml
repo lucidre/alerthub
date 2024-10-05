@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     
     <application
-        android:label="alerthub"
+        android:label="AlertHub"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
@@ -36,7 +36,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="${apiKey}" />
+            android:value="AIzaSyDJVtmiyllReKQMxkO1mM5oP_MRfMEbESY" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

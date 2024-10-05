@@ -15,7 +15,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Container(
       decoration: BoxDecoration(
         gradient: RadialGradient(
-          colors: gradientColorss,
+          colors: gradientColors,
         ),
       ),
     );

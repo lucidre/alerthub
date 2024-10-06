@@ -87,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future startTime() async {
-    const duration = Duration(seconds: 2);
+    const duration = Duration(seconds: 4);
     return Timer(duration, route);
   }
 

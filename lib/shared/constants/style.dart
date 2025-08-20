@@ -61,7 +61,7 @@ List<Color> gradientColors = [
 
 TextStyle satoshi500S12 = const TextStyle(
   fontSize: 12,
-  color: neutral500,
+  color: neutral700,
   fontWeight: FontWeight.w500,
   // height: 20,
   letterSpacing: 0,
@@ -69,7 +69,7 @@ TextStyle satoshi500S12 = const TextStyle(
 );
 TextStyle satoshi500S14 = const TextStyle(
   fontSize: 14,
-  color: neutral500,
+  color: neutral700,
   fontWeight: FontWeight.w500,
   // height: 20,
   letterSpacing: 0,
@@ -78,7 +78,7 @@ TextStyle satoshi500S14 = const TextStyle(
 
 TextStyle satoshi500S16 = const TextStyle(
   fontSize: 16,
-  color: neutral500,
+  color: neutral700,
   fontWeight: FontWeight.w500,
   // height: 20,
   letterSpacing: 0,

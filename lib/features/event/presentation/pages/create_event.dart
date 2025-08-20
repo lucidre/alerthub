@@ -58,12 +58,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
             colorScheme: const ColorScheme.light(primary: blackShade1Color),
             buttonTheme:
                 const ButtonThemeData(textTheme: ButtonTextTheme.primary),
-            dialogTheme: DialogTheme(
+            /*   dialogTheme: DialogTheme(
               shape: RoundedRectangleBorder(
                 side: const BorderSide(color: neutral300),
                 borderRadius: BorderRadius.circular(space4), // Border radius
               ),
-            ),
+            ), */
           ),
           child: child!,
         );
@@ -518,14 +518,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         ],
       ).fadeInAndMoveFromBottom(),
       verticalSpacer8,
-      AddressTextField(
+      /* AddressTextField(
         textInputAction: TextInputAction.next,
         hintText: context.localization?.enterEventLocation ?? '',
         locationUpdate: (lat, lng) => controller.decodeAddress(),
         ignoreMaxLine: true,
         keyboardType: TextInputType.streetAddress,
         controller: locationController,
-      ).fadeInAndMoveFromBottom(),
+      ).fadeInAndMoveFromBottom(), */
     ];
   }
 

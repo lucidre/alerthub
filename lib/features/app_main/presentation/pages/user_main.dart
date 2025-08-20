@@ -1,5 +1,6 @@
-import 'package:alerthub/features/event/presentation/pages/events_home_tab.dart';
-import 'package:alerthub/features/event/presentation/pages/events_map_tab.dart';
+import 'package:alerthub/features/event/presentation/pages/user_home_tab.dart';
+import 'package:alerthub/features/event/presentation/pages/user_map_tab.dart';
+import 'package:alerthub/features/informations/presentation/pages/information_tab.dart';
 import 'package:alerthub/features/user/presentation/pages/user_profile_tab.dart';
 import 'package:alerthub/shared/models/bottom_bar/bottom_bar.dart';
 import 'package:alerthub/shared/widgets/bottom_nav.dart';
@@ -7,19 +8,20 @@ import 'package:alerthub/common_libs.dart';
 import 'package:flutter/cupertino.dart';
 
 @RoutePage()
-class AppMainScreen extends StatefulWidget {
-  const AppMainScreen({super.key});
+class UserMainScreen extends StatefulWidget {
+  const UserMainScreen({super.key});
 
   @override
-  State<AppMainScreen> createState() => _AppMainScreenState();
+  State<UserMainScreen> createState() => _UserMainScreenState();
 }
 
-class _AppMainScreenState extends State<AppMainScreen> {
+class _UserMainScreenState extends State<UserMainScreen> {
   final pageController = PageController();
 
   final pages = [
-    const EventsHomeTab(),
-    const EventsMapTab(),
+    const UserHomeTab(),
+    const UsersMapTab(),
+    const InformationTab(),
     const UserProfileTab(),
   ];
 
@@ -28,11 +30,11 @@ class _AppMainScreenState extends State<AppMainScreen> {
   @override
   void initState() {
     super.initState();
-    Get.put(BottomBarController());
+    Get.put(UserBottomBarController());
     Future.delayed(Duration.zero, () {
       positionStreamSubscription?.cancel();
       positionStreamSubscription =
-          Get.find<BottomBarController>().indexRx.listen((index) {
+          Get.find<UserBottomBarController>().indexRx.listen((index) {
         pageController.animateToPage(
           index,
           duration: fastDuration,
@@ -72,25 +74,24 @@ class _AppMainScreenState extends State<AppMainScreen> {
           title: context.localization?.home ?? '', icon: CupertinoIcons.home),
       BottomBarModel(
           title: context.localization?.map ?? '', icon: CupertinoIcons.map),
+      BottomBarModel(title: 'Information', icon: CupertinoIcons.info_circle),
       BottomBarModel(
           title: context.localization?.profile ?? '',
           icon: CupertinoIcons.profile_circled),
     ];
-    return GetX<BottomBarController>(builder: (controller) {
+    return GetX<UserBottomBarController>(builder: (controller) {
       final index = controller.index;
 
       return AppBottomNavigationBar(
         bottomBarModels: bottomBarModels,
         currentIndex: index,
-        onTap: (index) {
-          Get.find<BottomBarController>().setIndex(index);
-        },
+        onTap: (index) => Get.find<UserBottomBarController>().setIndex(index),
       );
     });
   }
 
   buildFloatingActinoButton() {
-    return GetX<BottomBarController>(builder: (controller) {
+    return GetX<UserBottomBarController>(builder: (controller) {
       final index = controller.index;
       return TweenAnimationBuilder<double>(
           tween: Tween(

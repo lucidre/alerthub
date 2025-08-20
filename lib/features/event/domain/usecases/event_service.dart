@@ -1,6 +1,7 @@
 import 'package:alerthub/features/event/domain/repositories/event_repository.dart';
 import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:alerthub/features/event/data/model/event/events.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/hospitals.dart';
 
 class EventService {
   final EventRepository repository;
@@ -8,6 +9,20 @@ class EventService {
   EventService(this.repository);
 
   Future<Event> getEvent(String id) => repository.getEvent(id);
+
+  Future<Events> getUserEvents(int page) => repository.getUserEvents(page);
+
+  Future<Hospitals> nearbyHospitals(
+          {required int radius,
+          required double lat,
+          required double lng,
+          required int page}) =>
+      repository.nearbyHospitals(
+        radius: radius,
+        lat: lat,
+        lng: lng,
+        page: page,
+      );
 
   Future<Events> map({
     required double radius,

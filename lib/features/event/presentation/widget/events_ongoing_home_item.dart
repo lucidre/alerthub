@@ -1,5 +1,5 @@
 import 'package:alerthub/features/event/data/model/event/event.dart';
-import 'package:alerthub/features/event/presentation/controller/events_home_tab_controller.dart';
+import 'package:alerthub/features/event/presentation/controller/user_home_tab_controller.dart';
 import 'package:alerthub/features/event/presentation/widget/event_item.dart';
 import 'package:alerthub/common_libs.dart';
 
@@ -12,7 +12,7 @@ class EventsOngoingHomeItem extends StatelessWidget {
       children: [
         buildTitle(context).fadeInAndMoveFromBottom(),
         verticalSpacer12,
-        GetX<EventsHomeTabController>(
+        GetX<UserHomeTabController>(
           builder: (controller) {
             final isLoading = controller.ongoingIsLoading;
             final hasError = controller.ongoingHasError;

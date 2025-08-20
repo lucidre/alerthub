@@ -96,9 +96,23 @@ class AppUtils {
     }
   }
 
+
+
+  String getYoutubeImage(String imageUrl) =>
+      "https://i1.ytimg.com/vi/$imageUrl/sddefault.jpg";
+ 
   onLinkClicked(String url) async {
     try {
       await launchUrlString(url, mode: LaunchMode.externalApplication);
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+  openYoutube(String id) async {
+    try {
+      await launchUrlString('https://www.youtube.com/watch?v=$id',
+          mode: LaunchMode.externalApplication);
     } catch (exception) {
       return Future.error(exception.toString());
     }

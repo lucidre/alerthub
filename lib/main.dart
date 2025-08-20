@@ -1,6 +1,6 @@
 import 'package:alerthub/app_setup.dart';
 import 'package:alerthub/common_libs.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:alerthub/l10n/app_localizations.dart';
 
 void main() async {
   await initializeApplication();

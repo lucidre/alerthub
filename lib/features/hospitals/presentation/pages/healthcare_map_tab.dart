@@ -10,13 +10,13 @@ import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:async/async.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class EventsMapTab extends StatefulWidget {
-  const EventsMapTab({super.key});
+class HealthCareMapTab extends StatefulWidget {
+  const HealthCareMapTab({super.key});
   @override
-  State<EventsMapTab> createState() => _EventsMapTabState();
+  State<HealthCareMapTab> createState() => _HealthCareMapTabState();
 }
 
-class _EventsMapTabState extends State<EventsMapTab> {
+class _HealthCareMapTabState extends State<HealthCareMapTab> {
   CancelableOperation<bool>? cancelableFuture;
   final oneSecond = const Duration(seconds: 1);
   final initialCamera = const CameraPosition(zoom: 0, target: LatLng(-1, -1));

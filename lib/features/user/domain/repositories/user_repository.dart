@@ -1,4 +1,3 @@
-import 'package:alerthub/features/event/data/model/event/events.dart';
 import 'package:alerthub/features/user/data/model/user_data/user_data.dart';
 
 abstract class UserRepository {
@@ -9,8 +8,6 @@ abstract class UserRepository {
     required String? country,
     required String? imageUrl,
   });
-
-  Future<Events> getUserEvents(int page);
 
   Future<String> createUser({
     required String uid,

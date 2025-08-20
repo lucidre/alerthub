@@ -1,1 +1,114 @@
- 
+
+USER STORY. 
+- they should be able to create an account and select type. 
+- if type is a driver then he needs to pick an hospital or enter the hospital referal code. 
+- hospital has to provide details of location, size and other stuffs. 
+- user just has to fill in primary details but on home page there would be a section telling them to complete the profile setup for advance stage. 
+
+USER ACCOUNT 
+- should see the map easily for ongoing emergencies. 
+- should have access to the panic mode on time. 
+- should be able to list contacts in the application that can serve as emergencies. 
+-  should be able to start and stop panic mode and determine if the panic should broadcast to everyone or just to a select few. 
+- should be able to register with a particular hospital as a patient. 
+- should be able to view common health emergencies and the possible solution. in text and video format. 
+- should get notifications. 
+- should be able to see emergencies and drivers and hospital on map. 
+
+
+HOSPITAL ACCOUNT
+- should get notifications. 
+- should have a way to view all map for the emergencies and for the drivers. and should also show emergency and drivers on it. 
+- should see a list of registered users to them and their status. status can be needing help, normal, pending approval, declined etc. 
+- should be able to see a list of drivers and their live location if availiable. 
+
+
+DRIVER ACCOUNT
+- should be able to see map, events, hospital etc. 
+- should be able to respond to a particular emergency and see the direction to it.
+- should be able to come back to the app and see the emergencies they are responding to and the way to their hospitals or nearby hospitals. 
+
+
+SCREEN BREAKDOWN. 
+
+SPLASH
+- Logo on the screen and fetching data if logged in. 
+
+ONBOARING 
+- A simple page talking about the app and sign in and sign up. 
+
+SIGN IN
+- Collelct email, password, forget password, terms and conditions. 
+- Also show sign up button. 
+- 
+
+SIGN UP
+- Collects email, and password, then they select account type. 
+- Account type contains of the users, hospital, drivers. 
+- account type then determines the next screen show to them.
+- if Account type is customer, show a page with image, full name, country, and phone number. 
+- if Account Type is hospital, show select location on map, hospital image, country, help line, hospital name. Once they are done show their hospital id and tell them it is needed to onoboard drivers. 
+- if Account Type is driver, show image, full name, hospital id, phone number, country, Then let them know that they should ask their hospital to verify them before they can gain access to the platform. 
+- 
+
+FORGOT PASSWORD AND CHANGE PASSWORD
+- Collect email and sends the forgot password mail to the users. 
+
+PANIC MODE
+- An explanation of what panic mode does and a button to turn on or off panic mode for the users. 
+- Panic mode settings, broadcast to everyone and broadcast to health location, health locations would be the one they are registered on or the general public. 
+
+MAP
+- Contains a screen of map points say green, red and blue.
+- green are the positions of hospitals, red are the positions of ongoing emergencies and blue are the postiotions of drivers. 
+- the user should also see thier current location. 
+- if they click on an emergency, they can see the person name, picture and other info and a button to direct them to the person. Security measures should be advised. 
+- If they click an hospital they can see the hospital details and view the way to it from the map. 
+- Drivers don't need to be show on cliclk for now. 
+
+PROFILE
+- Edit your profile image, details etc based on your account type. 
+
+SETTINGS
+- delete your account. 
+- logout.
+- terms and conditions. 
+- faq. 
+- contact us. 
+- 
+
+DRIVERS LIST
+- Hospitals should be able to view a list of drivers and sort out by status. 
+- drivers can be waiting for approval, responding to emergencies etc. 
+- if waiting for approval they can reject the driver, or aprrove and if a driver is already active they can deactivate the driver. 
+- drivers should be able to change hospital if they have been rejected at one.
+-  if the driver is responding to an emergency, they can see it. 
+- also they can track the driver location. 
+
+USERS LIST
+- Users get to see the list of other users in the app and can add them as family and friends and close respondants. 
+- in order to search they need to get the unique ID fromt he person to add the person. 
+
+
+
+
+
+users list
+- liat of users. 
+- status is normal, panic, pending, declined. 
+- if pending show accept, decline button. 
+- if panic connect to location and flag driver. 
+- view user details. 
+- filter by type. 
+
+drivers list
+- list of drivers
+- status is availiable, pending, declined, responding. 
+- if pending then accept or decline, 
+- if respoonding, show what it is responding to. 
+
+events list. 
+- list of events. 
+
+home
+- what would you like to do today, view events, users list, drivers list, profile management and settings, there is a registered patient with a panic ongoing; 

@@ -1,10 +1,19 @@
 import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:alerthub/features/event/data/model/event/events.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/hospitals.dart';
 
 abstract class EventRepository {
   Future<Event> getEvent(String eventId);
 
   Future<Events> search(String query, int page);
+
+  Future<Events> getUserEvents(int page);
+
+  Future<Hospitals> nearbyHospitals(
+      {required int radius,
+      required double lat,
+      required double lng,
+      required int page});
 
   Future<Events> nearby({
     required int radius,

@@ -1,4 +1,5 @@
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/features/panic/presentation/controller/panic_controller.dart';
 
 ///App Scaaffold
 class AppScaffold extends StatelessWidget {
@@ -23,6 +24,39 @@ class AppScaffold extends StatelessWidget {
     this.enableInternetCheck = true,
   });
 
+  buildPanicItem1() {
+    return GetX<PanicController>(builder: (controller) {
+      final isInAlert = controller.isInAlert;
+
+      return AnimatedBuilder(
+        animation: controller
+            .pulseAnimation, // You'll need to add this to PanicController
+        builder: (context, child) {
+          // Calculate pulsating color opacity (0.3 to 1.0)
+          final pulseOpacity =
+              isInAlert ? 0.3 + (0.7 * controller.pulseAnimation.value) : 1.0;
+
+          return AnimatedContainer(
+            duration: medDuration,
+            width: double.infinity,
+            height: double.infinity,
+            padding: const EdgeInsets.all(space12),
+            decoration: BoxDecoration(
+              color: whiteColor,
+              border: Border.all(
+                width: isInAlert ? 1 + (pulseOpacity.clamp(0, 1) * 3) : 1,
+                color: isInAlert
+                    ? destructive700.withValues(alpha: pulseOpacity)
+                    : neutral200,
+                strokeAlign: BorderSide.strokeAlignInside,
+              ),
+            ),
+          );
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +66,7 @@ class AppScaffold extends StatelessWidget {
         builder: (controller) {
           return Stack(
             children: [
+              buildPanicItem1(),
               SizedBox(
                 width: double.infinity,
                 height: double.infinity,

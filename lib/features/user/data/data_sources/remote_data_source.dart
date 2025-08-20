@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:alerthub/features/event/data/model/event/events.dart';
+ 
 import 'package:alerthub/shared/api/server_method.dart';
 import 'package:alerthub/features/user/data/model/user_data/user_data.dart';
 
@@ -226,25 +225,5 @@ class UserRemoteDataSource {
     }
   }
 
-  Future<Events> getUserEvents(int page) async {
-    try {
-      final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      final response = await $get('event/user_events?uid=$uid&page=$page');
-      if (response.isError) {
-        return Future.error(response.message);
-      }
-      return Events.fromMap(response.data);
-    } on SocketException {
-      return Future.error('No network connection.');
-    } on ClientException {
-      return Future.error('No network connection.');
-    } catch (exception) {
-      if (exception
-          .toString()
-          .contains('ClientException with SocketException')) {
-        return Future.error('No network connection.');
-      }
-      return Future.error(exception.toString());
-    }
-  }
+
 }

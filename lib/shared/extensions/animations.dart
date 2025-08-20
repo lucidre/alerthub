@@ -2,7 +2,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:alerthub/common_libs.dart';
 
 extension WidgetAnimation on Widget {
-  fadeInAndMoveFromTop({
+  Widget fadeInAndMoveFromTop({
     Duration? delay,
     Duration? animationDuration,
     Offset? offset,
@@ -13,7 +13,7 @@ extension WidgetAnimation on Widget {
               begin: offset ?? const Offset(0, -10))
           .fade(duration: animationDuration ?? fastDuration);
 
-  fadeInAndMoveFromBottom({
+  Widget fadeInAndMoveFromBottom({
     Duration? delay,
     Duration? animationDuration,
     Offset? offset,
@@ -24,7 +24,7 @@ extension WidgetAnimation on Widget {
               begin: offset ?? const Offset(0, 10))
           .fade(duration: animationDuration ?? fastDuration);
 
-  fadeIn({
+  Widget fadeIn({
     Duration? delay,
     Duration? animationDuration,
     Curve? curve,

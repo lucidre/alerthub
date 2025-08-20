@@ -1,4 +1,3 @@
-import 'package:alerthub/features/event/data/model/event/events.dart';
 import 'package:alerthub/features/user/data/model/user_data/user_data.dart';
 import 'package:alerthub/features/user/domain/repositories/user_repository.dart';
 
@@ -6,8 +5,6 @@ class UserService {
   final UserRepository repository;
 
   UserService(this.repository);
-
-  Future<Events> getUserEvents(int page) => repository.getUserEvents(page);
 
   Future<String> createUser({
     required String uid,

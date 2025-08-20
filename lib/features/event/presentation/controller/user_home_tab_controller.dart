@@ -1,11 +1,12 @@
 import 'package:alerthub/features/event/data/model/event/event.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/hospital.dart';
 import 'package:alerthub/features/event/domain/usecases/event_service.dart';
 import 'package:alerthub/common_libs.dart';
 
-class EventsHomeTabController extends GetxController {
+class UserHomeTabController extends GetxController {
   final EventService eventService;
 
-  EventsHomeTabController(this.eventService);
+  UserHomeTabController(this.eventService);
 
   final nearByRadius = 500;
   final RxList<Event> _nearbyEvents = <Event>[].obs;
@@ -102,6 +103,63 @@ class EventsHomeTabController extends GetxController {
     } catch (exception) {
       ongoingHasError = true;
       ongoingIsLoading = false;
+      return Future.error(exception.toString());
+    }
+  }
+
+  ////// ONGOING EVENTS DATA
+
+  final RxList<Hospital> _hospitals = <Hospital>[].obs;
+
+  final RxBool _hospitalsIsLoading = true.obs;
+  final RxBool _hospitalsHasError = false.obs;
+
+  List<Hospital> get hospitals => _hospitals;
+
+  bool get hospitalsIsLoading => _hospitalsIsLoading.value;
+  bool get hospitalsHasError => _hospitalsHasError.value;
+
+  set hospitalsIsLoading(bool value) => _hospitalsIsLoading.value = value;
+  set hospitalsHasError(bool value) => _hospitalsHasError.value = value;
+
+  void addHospitalsEvents(List<Hospital> hospitals) {
+    _hospitals.addAll(hospitals);
+    _hospitals.refresh();
+  }
+
+  void clearHospitalsEvents() {
+    _hospitals.clear();
+    _hospitals.refresh();
+  }
+
+  Future<void> getHospitalsData() async {
+    hospitalsIsLoading = true;
+    hospitalsHasError = false;
+    clearHospitalsEvents();
+
+    try {
+      final controller = Get.find<LocationController>();
+      await controller.initLocationUpdate();
+      final currentLocation = controller.userPosition;
+      final lat = currentLocation?.latitude;
+      final lng = currentLocation?.longitude;
+
+      final data = await eventService.nearbyHospitals(
+        radius: nearByRadius,
+        lat: lat ?? -1,
+        lng: lng ?? -1,
+        page: 0,
+      );
+
+      final list = data.data ?? [];
+
+      addHospitalsEvents(list);
+
+      hospitalsHasError = false;
+      hospitalsIsLoading = false;
+    } catch (exception) {
+      hospitalsHasError = true;
+      hospitalsIsLoading = false;
       return Future.error(exception.toString());
     }
   }

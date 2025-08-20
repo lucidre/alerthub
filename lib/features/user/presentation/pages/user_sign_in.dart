@@ -15,6 +15,12 @@ class UserSignInScreen extends StatefulWidget {
 }
 
 class _UserSignInScreenState extends State<UserSignInScreen> {
+  final accountTypes = [
+    'User',
+    'Healthcare',
+    'Ambulance',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -37,8 +43,15 @@ class _UserSignInScreenState extends State<UserSignInScreen> {
       final controller = Get.find<UserSignInController>();
       await controller.signInUser();
       //ensuring the bottom bar resets in case they are logging in again after logging out.
-      Get.find<BottomBarController>().goToHome();
-      context.router.push(const AppMainRoute());
+      Get.find<UserBottomBarController>().goToHome();
+
+      const accountType = '';
+      const verified = false;
+      if (accountType == accountTypes[2] && !verified) {
+        context.router.push(AmbulanceNotVerifiedRoute(email: email));
+      } else {
+        context.router.push(const UserMainRoute());
+      }
     } catch (exception) {
       context.showErrorSnackBar(exception.toString());
     }

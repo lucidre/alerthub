@@ -1,21 +1,19 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:alerthub/common_libs.dart';
 import 'package:location/location.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationController extends GetxController {
   final location = Location();
-  final RxBool _hasInitLocationListener = false.obs;
+  final RxBool _hasInitLocationLister = false.obs;
 
-  final Rxn<LatLng> _userPosition = Rxn();
+  final Rxn<LatLng> _current = Rxn();
+  LatLng? get userPosition => _current.value;
+  Rxn<LatLng>? get userPositionRxn => _current;
 
-  LatLng? get userPosition => _userPosition.value;
-  Rxn<LatLng>? get userPositionRxn => _userPosition;
-  StreamSubscription<LocationData>? positionStramSubscription;
-
-  setUserPosition(LatLng? position) => _userPosition.value = position;
+  setHomePosition(LatLng? position) => _current.value = position;
 
   initLocationUpdate() async {
-    if (_hasInitLocationListener.value) {
+    if (_hasInitLocationLister.value) {
       return;
     }
     try {
@@ -23,10 +21,10 @@ class LocationController extends GetxController {
       if (enabled) {
         enabled = await location.requestService();
         if (!enabled) {
-          throw 'Location services are disabled/turned off.';
+          throw 'Device location is turned off or disabled.';
         }
       } else {
-        throw 'Location services are disabled/turned off.';
+        throw 'Device location is turned off or disabled.';
       }
 
       PermissionStatus permission = await location.hasPermission();
@@ -42,23 +40,15 @@ class LocationController extends GetxController {
         throw 'Location permissions are permanently denied, we cannot request permissions.';
       }
 
-      final current = await location.getLocation();
-      if (current.latitude != null && current.longitude != null) {
-        final latLng = LatLng(current.latitude!, current.longitude!);
-        setUserPosition(latLng);
-      }
-
-      positionStramSubscription?.cancel();
-      positionStramSubscription = location.onLocationChanged.listen(
+      _hasInitLocationLister(true);
+      location.onLocationChanged.listen(
         (current) {
           if (current.latitude != null && current.longitude != null) {
             final latLng = LatLng(current.latitude!, current.longitude!);
-            setUserPosition(latLng);
+            setHomePosition(latLng);
           }
         },
       );
-
-      _hasInitLocationListener(true);
     } catch (exception) {
       return Future.error(exception.toString());
     }

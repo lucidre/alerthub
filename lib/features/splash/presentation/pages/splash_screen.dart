@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void route() async {
     if (FirebaseAuth.instance.currentUser != null) {
-      context.router.replace(const AppMainRoute());
+      context.router.replace(const UserMainRoute());
     } else {
       context.router.replace(const OnboardingRoute());
     }

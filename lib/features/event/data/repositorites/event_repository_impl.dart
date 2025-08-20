@@ -2,6 +2,7 @@ import 'package:alerthub/features/event/data/data_sources/remote_data_source.dar
 import 'package:alerthub/features/event/domain/repositories/event_repository.dart';
 import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:alerthub/features/event/data/model/event/events.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/hospitals.dart';
 
 class EventRepositoryImpl implements EventRepository {
   final EventRemoteDataSource remoteDataSource;
@@ -12,6 +13,25 @@ class EventRepositoryImpl implements EventRepository {
   Future<Event> getEvent(String id) async {
     try {
       final response = await remoteDataSource.getEvent(id);
+      return response;
+    } catch (exception) {
+      return Future.error(exception);
+    }
+  }
+
+  @override
+  Future<Hospitals> nearbyHospitals(
+      {required int radius,
+      required double lat,
+      required double lng,
+      required int page}) async {
+    try {
+      final response = await remoteDataSource.nearbyHospitals(
+        radius: radius,
+        lat: lat,
+        lng: lng,
+        page: page,
+      );
       return response;
     } catch (exception) {
       return Future.error(exception);
@@ -158,6 +178,16 @@ class EventRepositoryImpl implements EventRepository {
         isTrue: isTrue,
         comment: comment,
       );
+      return response;
+    } catch (exception) {
+      return Future.error(exception);
+    }
+  }
+
+  @override
+  Future<Events> getUserEvents(int page) async {
+    try {
+      final response = await remoteDataSource.getUserEvents(page);
       return response;
     } catch (exception) {
       return Future.error(exception);

@@ -5,8 +5,6 @@ import 'package:alerthub/features/user/data/repositorites/user_repository_impl.d
 import 'package:alerthub/features/user/domain/usecases/user_service.dart';
 import 'package:alerthub/features/user/presentation/controller/user_sign_up_controller.dart';
 import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/shared/widgets/select_country.dart';
-import 'package:country_picker/country_picker.dart';
 
 @RoutePage()
 class UserSignUpScreen extends StatefulWidget {
@@ -17,10 +15,16 @@ class UserSignUpScreen extends StatefulWidget {
 }
 
 class _UserSignUpScreenState extends State<UserSignUpScreen> {
+  final tag = UniqueKey().toString();
+  final accountTypes = [
+    'User',
+    'Healthcare',
+    'Ambulance',
+  ];
   @override
   void initState() {
     super.initState();
-    final controller = Get.put(
+    Get.put(
       UserSignUpController(
         UserService(
           UserRepositoryImpl(
@@ -28,18 +32,32 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
           ),
         ),
       ),
+      tag: tag,
     );
-    controller.resetFields();
+  }
+
+  @override
+  void dispose() {
+    Get.delete<UserSignUpController>(tag: tag);
+    super.dispose();
   }
 
   void signUpUser() async {
     FocusScope.of(context).unfocus();
 
     try {
-      final controller = Get.find<UserSignUpController>();
+      final controller = Get.find<UserSignUpController>(tag: tag);
       await controller.signUpUser();
       context.showSuccessSnackBar(context.localization?.accountCreated ?? '');
-      context.router.replace(const UserSignInRoute());
+      final accountType = controller.accountType;
+      final email = controller.emailController.text;
+      if (accountType == accountTypes[0]) {
+        context.router.push(UserAccountSetupRoute(email: email));
+      } else if (accountType == accountTypes[1]) {
+        context.router.push(HospitalAccountSetupRoute(email: email));
+      } else if (accountType == accountTypes[2]) {
+        context.router.push(AmbulanceAccountSetupRoute(email: email));
+      }
     } catch (exception) {
       context.showErrorSnackBar(exception.toString());
     }
@@ -58,7 +76,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
 
   builBody() {
     return Obx(() {
-      final controller = Get.find<UserSignUpController>();
+      final controller = Get.find<UserSignUpController>(tag: tag);
       final isLoading = controller.isLoading;
       final formKey = controller.formKey;
       return Form(
@@ -69,17 +87,13 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildFullName(),
-                verticalSpacer12,
                 ...buildEmail(),
-                verticalSpacer12,
-                ...buildPhoneNumber(),
-                verticalSpacer12,
-                ...buildCountry(),
                 verticalSpacer12,
                 ...buildPassword(),
                 verticalSpacer12,
                 ...buildConfirmPassword(),
+                verticalSpacer12,
+                ...buildAccountType(),
                 verticalSpacer12,
                 buildTandCCheckbox(),
                 verticalSpacer12,
@@ -98,7 +112,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
 
   Widget buildTandCCheckbox() {
     return Obx(() {
-      final controller = Get.find<UserSignUpController>();
+      final controller = Get.find<UserSignUpController>(tag: tag);
       final hasUserAgreed = controller.hasUserAgreed;
       return Row(
         children: [
@@ -142,84 +156,15 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
     }).fadeInAndMoveFromBottom();
   }
 
-  Widget buildFullName() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(context.localization?.fullName ?? '', style: satoshi500S12)
-            .fadeInAndMoveFromBottom(),
-        verticalSpacer8,
-        Obx(() {
-          final controller = Get.find<UserSignUpController>();
-          final emailFocusNode = controller.emailFocusNode;
-          final fullNameController = controller.fullNameController;
-
-          return TextFormField(
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (_) =>
-                FocusScope.of(context).requestFocus(emailFocusNode),
-            decoration: context.inputDecoration(
-                hintText: context.localization?.enterFullName ?? ''),
-            keyboardType: TextInputType.name,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return context.localization?.provideFullName ?? '';
-              }
-
-              return null;
-            },
-            controller: fullNameController,
-          );
-        }).fadeInAndMoveFromBottom(),
-      ],
-    );
-  }
-
-  List<Widget> buildPhoneNumber() {
-    return [
-      Text(context.localization?.phoneNumber ?? '', style: satoshi500S12)
-          .fadeInAndMoveFromBottom(),
-      verticalSpacer8,
-      Obx(() {
-        final controller = Get.find<UserSignUpController>();
-        final passwordFocusNode = controller.passwordFocusNode;
-        final phoneNumberController = controller.phoneNumberController;
-        final phoneNumberFocusNode = controller.phoneNumberFocusNode;
-
-        return TextFormField(
-          textInputAction: TextInputAction.next,
-          focusNode: phoneNumberFocusNode,
-          onFieldSubmitted: (_) {
-            FocusScope.of(context).requestFocus(passwordFocusNode);
-          },
-          decoration: context.inputDecoration(
-              hintText: context.localization?.enterPhoneNumber ?? ''),
-          keyboardType: TextInputType.phone,
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return context.localization?.providePhoneNumber ?? '';
-            } else if (int.tryParse(value) == null) {
-              return context.localization?.enterValidPhoneNumber ?? '';
-            } else if (!$appUtil.isPhoneValid(value.trim())) {
-              return context.localization?.enterValidPhoneNumber ?? '';
-            }
-            return null;
-          },
-          controller: phoneNumberController,
-        );
-      }).fadeInAndMoveFromBottom(),
-    ];
-  }
-
   List<Widget> buildEmail() {
     return [
       Text(context.localization?.email ?? '', style: satoshi500S12)
           .fadeInAndMoveFromBottom(),
       verticalSpacer8,
       Obx(() {
-        final controller = Get.find<UserSignUpController>();
+        final controller = Get.find<UserSignUpController>(tag: tag);
 
-        final phoneNumberFocusNode = controller.phoneNumberFocusNode;
+        final passwordFocusNode = controller.passwordFocusNode;
         final emailController = controller.emailController;
         final emailFocusNode = controller.emailFocusNode;
 
@@ -227,7 +172,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
           textInputAction: TextInputAction.next,
           focusNode: emailFocusNode,
           onFieldSubmitted: (_) {
-            FocusScope.of(context).requestFocus(phoneNumberFocusNode);
+            FocusScope.of(context).requestFocus(passwordFocusNode);
           },
           decoration: context.inputDecoration(
               hintText: context.localization?.enterEmailAddress ?? ''),
@@ -252,7 +197,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
           .fadeInAndMoveFromBottom(),
       verticalSpacer8,
       Obx(() {
-        final controller = Get.find<UserSignUpController>();
+        final controller = Get.find<UserSignUpController>(tag: tag);
         final retypePasswordController = controller.retypePasswordController;
         final isHidden = controller.isHidden;
         final retypePasswordFocusNode = controller.retypePasswordFocusNode;
@@ -303,7 +248,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
           .fadeInAndMoveFromBottom(),
       verticalSpacer8,
       Obx(() {
-        final controller = Get.find<UserSignUpController>();
+        final controller = Get.find<UserSignUpController>(tag: tag);
         final retypePasswordController = controller.retypePasswordController;
         final isHidden = controller.isHidden;
         final retypePasswordFocusNode = controller.retypePasswordFocusNode;
@@ -346,55 +291,49 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
     ];
   }
 
-  List<Widget> buildCountry() {
+  List<Widget> buildAccountType() {
     return [
-      Text(context.localization?.country ?? '', style: satoshi500S12)
-          .fadeInAndMoveFromBottom(),
+      Text('Account type', style: satoshi500S12).fadeInAndMoveFromBottom(),
       verticalSpacer8,
       Obx(() {
-        final controller = Get.find<UserSignUpController>();
-        final selectedCountry = controller.selectedCountry;
-        return InkWell(
-          splashColor: Colors.transparent,
-          onTap: () async {
-            final country = await context.showBottomBar(
-              child: SelectCountryBar(
-                country: selectedCountry,
-              ),
-            );
+        final controller = Get.find<UserSignUpController>(tag: tag);
+        final accountType = controller.accountType;
 
-            if (country != null && country is Country) {
-              controller.selectedCountry = country;
-            }
-          },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(space12),
-            decoration: BoxDecoration(
-                border: Border.all(color: neutral200),
-                color: whiteBrownBg1Color,
-                borderRadius: BorderRadius.circular(cornersSmall)),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    selectedCountry == null
-                        ? (context.localization?.selectCountry ?? '')
-                        : '${selectedCountry.flagEmoji} ${selectedCountry.displayName}',
-                    style: satoshi500S14.copyWith(
-                        color: selectedCountry == null ? neutral400 : null),
-                  ),
-                ),
-                horizontalSpacer8,
-                const Icon(
-                  Icons.arrow_drop_down_rounded,
-                  color: neutral400,
-                )
-              ],
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+              border: Border.all(color: neutral200),
+              color: whiteBrownBg1Color,
+              borderRadius: BorderRadius.circular(cornersSmall)),
+          child: DropdownButton<String>(
+            value: accountType,
+            icon: const Icon(
+              Icons.arrow_drop_down_rounded,
+              color: neutral400,
             ),
+            hint: Text(
+              'Select your account type',
+              style: satoshi500S14.copyWith(color: neutral400),
+            ),
+            style: satoshi500S14,
+            alignment: Alignment.centerLeft,
+            underline: const SizedBox(width: double.infinity),
+            isExpanded: true,
+            borderRadius: BorderRadius.circular(space4),
+            padding: const EdgeInsets.only(left: space12, right: space12),
+            items: accountTypes.map((value) {
+              return DropdownMenuItem(
+                value: value,
+                child: Text(
+                  value,
+                  style: satoshi500S14,
+                ),
+              );
+            }).toList(),
+            onChanged: (String? newValue) => controller.accountType = newValue,
           ),
-        );
-      }).fadeInAndMoveFromBottom(),
+        ).fadeInAndMoveFromBottom();
+      }),
     ];
   }
 

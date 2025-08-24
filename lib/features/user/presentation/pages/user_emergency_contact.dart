@@ -49,7 +49,7 @@ class _UserEmergencyContactScreenState
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: buildAppBar(),
-      floatingActionButton: buildFloatingActinoButton(),
+      floatingActionButton: buildFloatingActionButton(),
       body: Padding(
         padding: const EdgeInsets.all(space12),
         child: GetX<UserEmergencyContactsController>(
@@ -73,9 +73,15 @@ class _UserEmergencyContactScreenState
     );
   }
 
-  buildFloatingActinoButton() {
+  buildFloatingActionButton() {
     return FloatingActionButton(
-      onPressed: () => context.showBottomBar(child: AddContactBar(tag: tag)),
+      onPressed: () async {
+        final result =
+            await context.showBottomBar(child: const AddContactBar());
+        if (result is bool && result) {
+          getData();
+        }
+      },
       backgroundColor: blackShade1Color,
       shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(space4)),
@@ -118,12 +124,13 @@ class _UserEmergencyContactScreenState
     );
   }
 
-  onContactPressed(Contact contact) => context.showBottomBar(
-        child: AddContactBar(
-          contact: contact,
-          tag: tag,
-        ),
-      );
+  onContactPressed(Contact contact) async {
+    final result =
+        await context.showBottomBar(child: AddContactBar(contact: contact));
+    if (result is bool && result) {
+      getData();
+    }
+  }
 
   Widget buildContactTile(Contact contact, VoidCallback onPressed) {
     return Padding(

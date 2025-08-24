@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:alerthub/features/user/data/data_sources/remote_data_source.dart';
+import 'package:alerthub/features/user/data/model/account_types.dart';
 import 'package:alerthub/features/user/data/repositorites/user_repository_impl.dart';
 import 'package:alerthub/features/user/domain/usecases/user_service.dart';
 import 'package:alerthub/features/user/presentation/controller/user_sign_up_controller.dart';
@@ -16,11 +17,7 @@ class UserSignUpScreen extends StatefulWidget {
 
 class _UserSignUpScreenState extends State<UserSignUpScreen> {
   final tag = UniqueKey().toString();
-  final accountTypes = [
-    'User',
-    'Healthcare',
-    'Ambulance',
-  ];
+
   @override
   void initState() {
     super.initState();
@@ -305,7 +302,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
               border: Border.all(color: neutral200),
               color: whiteBrownBg1Color,
               borderRadius: BorderRadius.circular(cornersSmall)),
-          child: DropdownButton<String>(
+          child: DropdownButton<AccountType>(
             value: accountType,
             icon: const Icon(
               Icons.arrow_drop_down_rounded,
@@ -325,12 +322,13 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
               return DropdownMenuItem(
                 value: value,
                 child: Text(
-                  value,
+                  value.dropDownName,
                   style: satoshi500S14,
                 ),
               );
             }).toList(),
-            onChanged: (String? newValue) => controller.accountType = newValue,
+            onChanged: (AccountType? newValue) =>
+                controller.accountType = newValue,
           ),
         ).fadeInAndMoveFromBottom();
       }),

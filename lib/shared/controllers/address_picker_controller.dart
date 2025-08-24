@@ -1,5 +1,4 @@
 import 'package:alerthub/common_libs.dart' hide Marker;
-import 'package:alerthub/shared/controllers/location_controller.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:map_location_picker/map_location_picker.dart';
 
@@ -161,7 +160,6 @@ class AddressPickerController extends GetxController {
   Future<void> decodeAddress(double lat, double lng) async {
     final location = Location(lat: lat, lng: lng);
     try {
-      //TODO add key
       final geocoding = GoogleMapsGeocoding(apiKey: dotenv.env['mapKey'] ?? '');
       final response = await geocoding.searchByLocation(location);
 

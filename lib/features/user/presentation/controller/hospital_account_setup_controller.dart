@@ -17,9 +17,12 @@ class HospitalAccoutSetupController extends GetxController {
       TextEditingController().obs;
   final Rx<TextEditingController> _addressController =
       TextEditingController().obs;
+  final Rx<TextEditingController> _descriptionController =
+      TextEditingController().obs;
   final Rx<TextEditingController> _helplineController =
       TextEditingController().obs;
   final Rx<FocusNode> _helplineFocusNode = FocusNode().obs;
+  final Rx<FocusNode> _descriptionFocusNode = FocusNode().obs;
   final Rx<GlobalKey<FormState>> _formKey = GlobalKey<FormState>().obs;
   final Rxn<File> _profileImage = Rxn<File>();
 
@@ -31,9 +34,12 @@ class HospitalAccoutSetupController extends GetxController {
   File? get profileImage => _profileImage.value;
   TextEditingController get hospitalNameController =>
       _hospitalNameController.value;
+  TextEditingController get descriptionController =>
+      _descriptionController.value;
   TextEditingController get addressController => _addressController.value;
   TextEditingController get helplineController => _helplineController.value;
   FocusNode get helplineFocusNode => _helplineFocusNode.value;
+  FocusNode get descriptionFocusNode => _descriptionFocusNode.value;
 
   GlobalKey<FormState> get formKey => _formKey.value;
 
@@ -45,11 +51,15 @@ class HospitalAccoutSetupController extends GetxController {
   set profileImage(File? value) => _profileImage.value = value;
   set hospitalNameController(TextEditingController value) =>
       _hospitalNameController.value = value;
+  set descriptionController(TextEditingController value) =>
+      _descriptionController.value = value;
   set helplineController(TextEditingController value) =>
       _helplineController.value = value;
   set addressController(TextEditingController value) =>
       _addressController.value = value;
   set helplineFocusNode(FocusNode value) => _helplineFocusNode.value = value;
+  set descriptionFocusNode(FocusNode value) =>
+      _descriptionFocusNode.value = value;
   set formKey(GlobalKey<FormState> value) => _formKey.value = value;
 
   locationUpdate(double? lat, double? lng) {
@@ -57,7 +67,7 @@ class HospitalAccoutSetupController extends GetxController {
     this.lng = lng;
   }
 
-  Future<void> signUpHospital() async {
+  Future<void> signUpHospital(String email) async {
     final isValid = formKey.currentState?.validate() ?? false;
     if (!isValid) {
       return Future.error('Kindly fill all fields.');
@@ -81,24 +91,27 @@ class HospitalAccoutSetupController extends GetxController {
     isLoading = true;
 
     try {
-      /*    final hospitalName = hospitalNameController.text.trim();
+      final hospitalName = hospitalNameController.text.trim();
       final helpline = helplineController.text.trim();
       final country = selectedCountry?.name ?? '';
-         final profileImage = await authService.upload(
-        email: email,
-        filePath: this.profileImage?.path ?? '',
-        endPath: 'profile_image',
-        fileName: 'profile_image',
-      ); 
+      final description = descriptionController.text.trim();
+      final location = addressController.text.trim();
+      final img =
+          await userService.uploadProfilePicture(profileImage?.path ?? '');
 
-
-       await userService.register(
+      await userService.updateHealthCenter(
         hospitalName: hospitalName,
         email: email,
         helpline: helpline,
+        description: description,
         country: country,
-        password: password,
-      ); */
+        imageUrl: img,
+        latitude: lat ?? -1,
+        longitude: lng ?? -1,
+        location: location,
+        drivers: [],
+      );
+
       isLoading = false;
     } catch (exception) {
       isLoading = false;

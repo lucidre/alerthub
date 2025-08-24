@@ -1,16 +1,18 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/features/user/data/data_sources/remote_data_source.dart';
 import 'package:alerthub/features/user/data/model/contacts/contact.dart';
-import 'package:alerthub/features/user/presentation/controller/user_emergency_contact.dart';
+import 'package:alerthub/features/user/data/repositorites/user_repository_impl.dart';
+import 'package:alerthub/features/user/domain/usecases/user_service.dart';
+import 'package:alerthub/features/user/presentation/controller/add_edit_emergency_contact.dart';
 
 class AddContactBar extends StatefulWidget {
   final Contact? contact;
-  final String tag;
+
   const AddContactBar({
     super.key,
     this.contact,
-    required this.tag,
   });
 
   @override
@@ -18,20 +20,25 @@ class AddContactBar extends StatefulWidget {
 }
 
 class _AddContactBarState extends State<AddContactBar> {
-  final nameController = TextEditingController();
-  final phoneNumberController = TextEditingController();
-  final countryController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
-  bool isLoading = false;
-  bool isDeleting = false;
-
+  final tag = UniqueKey().toString();
   @override
   void initState() {
     super.initState();
 
-    nameController.text = widget.contact?.fullName ?? '';
-    phoneNumberController.text = widget.contact?.phoneNumber ?? '';
-    countryController.text = widget.contact?.country ?? '';
+    final controller = Get.put(
+      AddEditEmergencyContactsController(
+        UserService(
+          UserRepositoryImpl(
+            UserRemoteDataSource(),
+          ),
+        ),
+      ),
+      tag: tag,
+    );
+
+    if (widget.contact != null) {
+      controller.restoreOldContact(widget.contact!);
+    }
   }
 
   @override
@@ -52,86 +59,51 @@ class _AddContactBarState extends State<AddContactBar> {
 
   saveForm() {
     FocusScope.of(context).unfocus();
-    final isValid = formKey.currentState?.validate() ?? false;
-
-    if (!isValid) {
-      context
-          .showErrorSnackBar(context.localization?.kindlyFillAllFields ?? '');
-      return;
-    }
-
-    if (isLoading || isDeleting) {
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-    });
 
     try {
-      final contact = Contact(
-        id: widget.contact?.id,
-        fullName: nameController.text.trim(),
-        phoneNumber: phoneNumberController.text.trim(),
-        country: countryController.text.trim(),
-      );
-      // TODO: do the work of updating here.
-
-      final controller =
-          Get.find<UserEmergencyContactsController>(tag: widget.tag);
-      controller.insertOrUpdateContact(contact);
-      context.router.maybePop();
+      final controller = Get.find<AddEditEmergencyContactsController>(tag: tag);
+      controller.saveContact();
+      context.router.maybePop(true);
     } catch (exception) {
       context.showErrorSnackBar('An error occurred');
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   deleteContact() {
     FocusScope.of(context).unfocus();
 
-    if (isLoading || isDeleting) {
-      return;
-    }
-
-    setState(() {
-      isDeleting = true;
-    });
-
     try {
-      final controller =
-          Get.find<UserEmergencyContactsController>(tag: widget.tag);
-      controller.deleteContact(widget.contact);
-      context.router.maybePop();
+      final controller = Get.find<AddEditEmergencyContactsController>(tag: tag);
+      controller.deleteContact();
+      context.router.maybePop(true);
     } catch (exception) {
       context.showErrorSnackBar('An error occurred');
     }
-    setState(() {
-      isDeleting = false;
-    });
   }
 
   List<Widget> buildFullName() {
     return [
       Text('Name', style: satoshi500S12).fadeInAndMoveFromBottom(),
       verticalSpacer8,
-      TextFormField(
-        textInputAction: TextInputAction.next,
-        decoration: context.inputDecoration(
-            hintText: context.localization?.enterFullName ?? ''),
-        keyboardType: TextInputType.name,
-        validator: (value) {
-          if (value == null || value.trim().isEmpty) {
-            return 'Kindly provide the contact fullname.';
-          }
+      Obx(() {
+        final controller =
+            Get.find<AddEditEmergencyContactsController>(tag: tag);
+        final nameController = controller.nameController;
+        return TextFormField(
+          textInputAction: TextInputAction.next,
+          decoration: context.inputDecoration(
+              hintText: context.localization?.enterFullName ?? ''),
+          keyboardType: TextInputType.name,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Kindly provide the contact fullname.';
+            }
 
-          return null;
-        },
-        controller: nameController,
-      ).fadeInAndMoveFromBottom(),
+            return null;
+          },
+          controller: nameController,
+        ).fadeInAndMoveFromBottom();
+      }),
     ];
   }
 
@@ -139,20 +111,25 @@ class _AddContactBarState extends State<AddContactBar> {
     return [
       Text('Country', style: satoshi500S12).fadeInAndMoveFromBottom(),
       verticalSpacer8,
-      TextFormField(
-        textInputAction: TextInputAction.done,
-        decoration: context.inputDecoration(
-            hintText: context.localization?.country ?? ''),
-        keyboardType: TextInputType.text,
-        validator: (value) {
-          if (value == null || value.trim().isEmpty) {
-            return "Kindly select the country.";
-          }
+      Obx(() {
+        final controller =
+            Get.find<AddEditEmergencyContactsController>(tag: tag);
+        final countryController = controller.countryController;
+        return TextFormField(
+          textInputAction: TextInputAction.done,
+          decoration: context.inputDecoration(
+              hintText: context.localization?.country ?? ''),
+          keyboardType: TextInputType.text,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "Kindly select the country.";
+            }
 
-          return null;
-        },
-        controller: countryController,
-      ).fadeInAndMoveFromBottom(),
+            return null;
+          },
+          controller: countryController,
+        ).fadeInAndMoveFromBottom();
+      }),
     ];
   }
 
@@ -160,61 +137,74 @@ class _AddContactBarState extends State<AddContactBar> {
     return [
       Text('Phone number', style: satoshi500S12).fadeInAndMoveFromBottom(),
       verticalSpacer8,
-      TextFormField(
-        textInputAction: TextInputAction.next,
-        decoration: context.inputDecoration(
-            hintText: context.localization?.enterPhoneNumber ?? ''),
-        keyboardType: TextInputType.phone,
-        validator: (value) {
-          if (value == null || value.trim().isEmpty) {
-            return context.localization?.providePhoneNumber ?? '';
-          } else if (int.tryParse(value) == null) {
-            return context.localization?.enterValidPhoneNumber ?? '';
-          } else if (!$appUtil.isPhoneValid(value.trim())) {
-            return context.localization?.enterValidPhoneNumber ?? '';
-          }
-          return null;
-        },
-        controller: phoneNumberController,
-      ).fadeInAndMoveFromBottom(),
+      Obx(() {
+        final controller =
+            Get.find<AddEditEmergencyContactsController>(tag: tag);
+        final phoneNumberController = controller.phoneNumberController;
+
+        return TextFormField(
+          textInputAction: TextInputAction.next,
+          decoration: context.inputDecoration(
+              hintText: context.localization?.enterPhoneNumber ?? ''),
+          keyboardType: TextInputType.phone,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return context.localization?.providePhoneNumber ?? '';
+            } else if (int.tryParse(value) == null) {
+              return context.localization?.enterValidPhoneNumber ?? '';
+            } else if (!$appUtil.isPhoneValid(value.trim())) {
+              return context.localization?.enterValidPhoneNumber ?? '';
+            }
+            return null;
+          },
+          controller: phoneNumberController,
+        ).fadeInAndMoveFromBottom();
+      }),
     ];
   }
 
   buildBody() {
-    return Form(
-      key: formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.contact == null ? 'Add contact' : 'Edit contact',
-            style: satoshi600S14,
-          ),
-          verticalSpacer12,
-          context.divider,
-          verticalSpacer12,
-          ...buildFullName(),
-          verticalSpacer12,
-          ...buildPhoneNumber(),
-          verticalSpacer12,
-          ...buildCountry(),
-          verticalSpacer16,
-          AppBtn.from(
-            onPressed: () => saveForm(),
-            text: widget.contact != null ? 'Update' : 'Continue',
-            isLoading: isLoading,
-          ),
-          verticalSpacer12,
-          if (widget.contact != null)
-            AppBtn.from(
-              onPressed: () => deleteContact(),
-              text: 'Delete',
-              isLoading: isDeleting,
-              bgColor: destructive600,
+    return GetX<AddEditEmergencyContactsController>(
+        tag: tag,
+        builder: (controller) {
+          final formKey = controller.formKey;
+          final isLoading = controller.isLoading;
+          final isDeleting = controller.isDeleting;
+          return Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.contact == null ? 'Add contact' : 'Edit contact',
+                  style: satoshi600S14,
+                ),
+                verticalSpacer12,
+                context.divider,
+                verticalSpacer12,
+                ...buildFullName(),
+                verticalSpacer12,
+                ...buildPhoneNumber(),
+                verticalSpacer12,
+                ...buildCountry(),
+                verticalSpacer16,
+                AppBtn.from(
+                  onPressed: () => saveForm(),
+                  text: widget.contact != null ? 'Update' : 'Continue',
+                  isLoading: isLoading,
+                ),
+                verticalSpacer12,
+                if (widget.contact != null)
+                  AppBtn.from(
+                    onPressed: () => deleteContact(),
+                    text: 'Delete',
+                    isLoading: isDeleting,
+                    bgColor: destructive600,
+                  ),
+                verticalSpacer32,
+              ],
             ),
-          verticalSpacer32,
-        ],
-      ),
-    );
+          );
+        });
   }
 }

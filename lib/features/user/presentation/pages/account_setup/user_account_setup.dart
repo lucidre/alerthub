@@ -49,7 +49,7 @@ class _UserAccountSetupScreenState extends State<UserAccountSetupScreen> {
 
     try {
       final controller = Get.find<UserAccoutSetupController>(tag: tag);
-      await controller.signUpUser();
+      await controller.signUpUser(widget.email);
       context.showInformationSnackBar('Account details updated successfully.');
       context.router.replace(const UserSignInRoute());
     } catch (exception) {

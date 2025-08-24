@@ -1,5 +1,6 @@
 import 'package:alerthub/features/user/domain/usecases/user_service.dart';
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/features/user/data/model/account_types.dart';
 
 class UserSignUpController extends GetxController {
   final UserService userService;
@@ -20,10 +21,10 @@ class UserSignUpController extends GetxController {
   final Rx<FocusNode> _passwordFocusNode = FocusNode().obs;
   final Rx<FocusNode> _retypePasswordFocusNode = FocusNode().obs;
   final Rx<GlobalKey<FormState>> _formKey = GlobalKey<FormState>().obs;
-  final RxnString _accountType = RxnString();
+  final _accountType = Rxn<AccountType>();
 
   // Getters
-  String? get accountType => _accountType.value;
+  AccountType? get accountType => _accountType.value;
   bool get hasUserAgreed => _hasUserAgreed.value;
   bool get isHidden => _isHidden.value;
   bool get isLoading => _isLoading.value;
@@ -41,7 +42,7 @@ class UserSignUpController extends GetxController {
   // Setters
   set hasUserAgreed(bool value) => _hasUserAgreed.value = value;
   set isHidden(bool value) => _isHidden.value = value;
-  set accountType(String? value) => _accountType.value = value;
+  set accountType(AccountType? value) => _accountType.value = value;
   set isLoading(bool value) => _isLoading.value = value;
   set emailController(TextEditingController value) =>
       _emailController.value = value;
@@ -77,17 +78,14 @@ class UserSignUpController extends GetxController {
     isLoading = true;
 
     try {
-      // final email = emailController.text.trim();
-      // final password = passwordController.text.trim();
-      // final type = accountType;
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
 
-      /*  await userService.register(
-        fullName: fullName,
+      await userService.register(
+        type: accountType!,
         email: email,
-        phoneNumber: phoneNumber,
-        country: country,
         password: password,
-      ); */
+      );
       isLoading = false;
     } catch (exception) {
       isLoading = false;

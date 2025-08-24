@@ -1,3 +1,4 @@
+import 'package:alerthub/features/event/data/model/map_data/map_data.dart';
 import 'package:alerthub/features/event/domain/repositories/event_repository.dart';
 import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:alerthub/features/event/data/model/event/events.dart';
@@ -24,7 +25,7 @@ class EventService {
         page: page,
       );
 
-  Future<Events> map({
+  Future<MapData> map({
     required double radius,
     required double lat,
     required double lng,

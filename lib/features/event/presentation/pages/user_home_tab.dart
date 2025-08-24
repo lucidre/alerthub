@@ -220,7 +220,7 @@ class _UserHomeTabState extends State<UserHomeTab> {
               height: 35,
               clipBehavior: Clip.antiAliasWithSaveLayer,
               decoration: BoxDecoration(
-                  color: blackShade1Color.withOpacity(.1),
+                  color: blackShade1Color.withValues(alpha: .1),
                   borderRadius: BorderRadius.circular(space4),
                   border: Border.all(
                     color: whiteColor,

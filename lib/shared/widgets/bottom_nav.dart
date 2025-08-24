@@ -50,10 +50,10 @@ class AppBottomNavigationBar extends StatelessWidget {
       builder: (context, value, _) {
         final selectedColor = context.textColor;
         final unselectedColor = context.backgroundColor;
-        final selectedColorWithOpacity = selectedColor.withOpacity(0.1);
+        final selectedColorWithOpacity = selectedColor.withValues(alpha: 0.1);
         return Material(
           color: Color.lerp(
-            selectedColor.withOpacity(0.0),
+            selectedColor.withValues(alpha: 0.0),
             selectedColor,
             value,
           ),
@@ -104,7 +104,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                           item.title,
                           style: satoshi600S14.copyWith(
                             color: Color.lerp(
-                              unselectedColor.withOpacity(0.0),
+                              unselectedColor.withValues(alpha: 0.0),
                               unselectedColor,
                               value,
                             ),

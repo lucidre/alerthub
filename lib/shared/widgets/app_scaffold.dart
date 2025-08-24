@@ -112,7 +112,7 @@ class AppScaffold extends StatelessWidget {
           right: kDefaultMargin / 4,
         ),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(.5),
+          color: Colors.red.withValues(alpha: .5),
           borderRadius: BorderRadius.circular(cornersSmall),
         ),
         child: Row(

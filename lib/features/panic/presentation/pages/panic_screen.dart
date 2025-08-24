@@ -127,7 +127,7 @@ class _PanicScreenState extends State<PanicScreen> {
           Row(children: [
             Expanded(
               child: Text(
-                'Broadcast to family and friends.',
+                'Broadcast to saved contacts.',
                 style: satoshi500S14,
               ),
             ),
@@ -135,13 +135,13 @@ class _PanicScreenState extends State<PanicScreen> {
               final controller = Get.find<PanicController>();
               final isInAlert = controller.isInAlert;
               return Switch.adaptive(
-                value: controller.broadcastToFamily,
+                value: controller.broadcastToContacts,
                 activeColor: Colors.white,
                 activeTrackColor: isInAlert ? destructive700 : kGoldDark,
                 inactiveThumbColor: Colors.white,
                 inactiveTrackColor: (isInAlert ? destructive700 : kGoldDark)
                     .withValues(alpha: 0.5),
-                onChanged: (value) => controller.broadcastToFamily = value,
+                onChanged: (value) => controller.broadcastToContacts = value,
               );
             }),
           ]).fadeInAndMoveFromBottom(),

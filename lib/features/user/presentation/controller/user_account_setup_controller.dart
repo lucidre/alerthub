@@ -43,7 +43,7 @@ class UserAccoutSetupController extends GetxController {
       _phoneNumberFocusNode.value = value;
   set formKey(GlobalKey<FormState> value) => _formKey.value = value;
 
-  Future<void> signUpUser() async {
+  Future<void> signUpUser(String email) async {
     final isValid = formKey.currentState?.validate() ?? false;
     if (!isValid) {
       return Future.error('Kindly fill all fields.');
@@ -67,24 +67,19 @@ class UserAccoutSetupController extends GetxController {
     isLoading = true;
 
     try {
-      /*    final fullName = fullNameController.text.trim();
+      final fullName = fullNameController.text.trim();
       final phoneNumber = phoneNumberController.text.trim();
       final country = selectedCountry?.name ?? '';
-         final profileImage = await authService.upload(
-        email: email,
-        filePath: this.profileImage?.path ?? '',
-        endPath: 'profile_image',
-        fileName: 'profile_image',
-      ); 
+      final profileImage =
+          await userService.uploadProfilePicture(this.profileImage?.path ?? '');
 
-
-       await userService.register(
+      await userService.updateUser(
         fullName: fullName,
         email: email,
         phoneNumber: phoneNumber,
         country: country,
-        password: password,
-      ); */
+        imageUrl: profileImage,
+      );
       isLoading = false;
     } catch (exception) {
       isLoading = false;

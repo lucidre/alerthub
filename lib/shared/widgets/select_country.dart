@@ -78,7 +78,7 @@ class _SelectCountryBarState extends State<SelectCountryBar> {
             height: 5,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(space4),
-              color: context.textColor.withOpacity(.8),
+              color: context.textColor.withValues(alpha: .8),
             ),
           ),
         ),

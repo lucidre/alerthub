@@ -90,7 +90,7 @@ class _EventsPriorityPickerBarState extends State<EventsPriorityPickerBar> {
           bottom: space6,
         ),
         decoration: BoxDecoration(
-          color: priority.backgroundColor.withOpacity(.5),
+          color: priority.backgroundColor.withValues(alpha: .5),
           borderRadius: BorderRadius.circular(space4),
           border: Border.all(color: priority.borderColor),
         ),

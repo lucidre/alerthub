@@ -6,5 +6,6 @@ class InformationService {
 
   InformationService(this.repository);
 
-  Future<Informations> getInformations() => repository.getInformations();
+  Future<Informations> getInformations(int page) =>
+      repository.getInformations(page);
 }

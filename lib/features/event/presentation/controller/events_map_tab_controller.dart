@@ -110,7 +110,8 @@ class EventsMapTabController extends GetxController {
         lng: currentPosition!.longitude,
       );
 
-      final events = data.data ?? [];
+//TODO ADD HEALTCENTER TO THIS.
+      final events = data.events ?? [];
 
       for (final event in events) {
         addMapEvent(event);

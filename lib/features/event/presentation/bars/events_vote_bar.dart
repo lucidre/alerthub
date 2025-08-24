@@ -157,7 +157,7 @@ class _EventsVoteBarState extends State<EventsVoteBar> {
         width: double.infinity,
         padding: const EdgeInsets.only(left: space12),
         decoration: BoxDecoration(
-          color: destructive100.withOpacity(.4),
+          color: destructive100.withValues(alpha: .4),
           borderRadius: BorderRadius.circular(space4),
           border: Border.all(color: destructive300),
         ),
@@ -201,7 +201,7 @@ class _EventsVoteBarState extends State<EventsVoteBar> {
         width: double.infinity,
         padding: const EdgeInsets.only(left: space12),
         decoration: BoxDecoration(
-          color: primary100.withOpacity(.4),
+          color: primary100.withValues(alpha: .4),
           borderRadius: BorderRadius.circular(space4),
           border: Border.all(color: primary400),
         ),

@@ -157,7 +157,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     margin: const EdgeInsets.all(space4),
                     decoration: BoxDecoration(
-                      color: blackColor.withOpacity(.1),
+                      color: blackColor.withValues(alpha: .1),
                       borderRadius: BorderRadius.circular(space4),
                       border: Border.all(
                         color: neutral200,
@@ -247,7 +247,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 height: 100,
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 decoration: BoxDecoration(
-                    color: blackShade1Color.withOpacity(.1),
+                    color: blackShade1Color.withValues(alpha: .1),
                     borderRadius: BorderRadius.circular(space4),
                     border: Border.all(
                       color: neutral200,

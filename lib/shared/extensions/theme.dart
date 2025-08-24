@@ -9,7 +9,7 @@ extension DeviceTheme on BuildContext {
   Color get backgroundColor => whiteBrownColor;
 
   Divider get divider => Divider(
-        color: textColor.withOpacity(.1),
+        color: textColor.withValues(alpha: .1),
         height: 1,
       );
 

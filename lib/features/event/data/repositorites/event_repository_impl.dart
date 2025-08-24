@@ -1,4 +1,5 @@
 import 'package:alerthub/features/event/data/data_sources/remote_data_source.dart';
+import 'package:alerthub/features/event/data/model/map_data/map_data.dart';
 import 'package:alerthub/features/event/domain/repositories/event_repository.dart';
 import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:alerthub/features/event/data/model/event/events.dart';
@@ -39,7 +40,7 @@ class EventRepositoryImpl implements EventRepository {
   }
 
   @override
-  Future<Events> map({
+  Future<MapData> map({
     required double radius,
     required double lat,
     required double lng,

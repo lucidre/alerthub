@@ -17,12 +17,14 @@ class InformationTab extends StatefulWidget {
 
 class _InformationTabState extends State<InformationTab> {
   final tag = UniqueKey().toString();
+  final StreamController<bool> progressStream = StreamController<bool>();
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    Get.put(
+    final controller = Get.put(
       InformationController(
         InformationService(
           InformationRepositoryImpl(
@@ -32,7 +34,18 @@ class _InformationTabState extends State<InformationTab> {
       ),
       tag: tag,
     );
-    Future.delayed(Duration.zero, () => getData());
+    Future.delayed(Duration.zero, () {
+      getData();
+      progressStream.add(false);
+
+      scrollController.addListener(() {
+        if (scrollController.position.pixels <
+            scrollController.position.maxScrollExtent - 10) {
+          return;
+        }
+        controller.getOldData(progressStream);
+      });
+    });
   }
 
   getData() async {
@@ -50,28 +63,37 @@ class _InformationTabState extends State<InformationTab> {
       appBar: buildAppBar(),
       body: Container(
         padding: const EdgeInsets.all(space12),
-        child: GetX<InformationController>(
-            tag: tag,
-            builder: (controller) {
-              final refreshController = controller.refreshController;
-              final isLoading = controller.isLoading;
-              final hasError = controller.hasError;
-              final informations = controller.informations;
-              return SmartRefresher(
-                enablePullDown: true,
-                header:
-                    const ClassicHeader(refreshStyle: RefreshStyle.UnFollow),
-                onRefresh: () => controller.onRefresh(),
-                controller: refreshController,
-                child: isLoading
-                    ? context.buildLoadingWidget()
-                    : hasError
-                        ? context.buildErrorWidget(onRetry: () => getData())
-                        : informations.isEmpty
-                            ? context.buildNoDataWidget()
-                            : buildBody(informations),
-              );
-            }),
+        child: Column(
+          children: [
+            Expanded(
+              child: GetX<InformationController>(
+                  tag: tag,
+                  builder: (controller) {
+                    final refreshController = controller.refreshController;
+                    final isLoading = controller.isLoading;
+                    final hasError = controller.hasError;
+                    final informations = controller.informations;
+
+                    return SmartRefresher(
+                      enablePullDown: true,
+                      header: const ClassicHeader(
+                          refreshStyle: RefreshStyle.UnFollow),
+                      onRefresh: () => controller.onRefresh(),
+                      controller: refreshController,
+                      child: isLoading
+                          ? context.buildLoadingWidget()
+                          : hasError
+                              ? context.buildErrorWidget(
+                                  onRetry: () => getData())
+                              : informations.isEmpty
+                                  ? context.buildNoDataWidget()
+                                  : buildBody(informations),
+                    );
+                  }),
+            ),
+            AppFetchingProgressBar(stream: progressStream.stream),
+          ],
+        ),
       ),
     );
   }
@@ -80,6 +102,7 @@ class _InformationTabState extends State<InformationTab> {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(0),
+      controller: scrollController,
       itemBuilder: (ctx, index) {
         final information = informations[index];
         return InformationItem(

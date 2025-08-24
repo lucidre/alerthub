@@ -40,7 +40,7 @@ extension DeviceBar on BuildContext {
             iconPositionTop: -10,
             iconPositionLeft: -10,
             icon: Icon(Icons.info_outline_rounded,
-                color: neutral900.withOpacity(.15), size: 120),
+                color: neutral900.withValues(alpha: .15), size: 120),
             messagePadding: const EdgeInsets.all(space16),
             textAlign: TextAlign.start,
             textStyle: satoshi500S14.copyWith(
@@ -57,7 +57,7 @@ extension DeviceBar on BuildContext {
       context: this,
       barrierDismissible: dismissible,
       barrierLabel: barrierLabel,
-      barrierColor: neutral800.withOpacity(0.5),
+      barrierColor: neutral800.withValues(alpha: 0.5),
       transitionDuration: fastDuration,
       pageBuilder: (_, __, ___) => Dialog(
         backgroundColor: backgroundColor,

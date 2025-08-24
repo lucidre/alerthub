@@ -1,21 +1,22 @@
 import 'dart:convert';
 
-import 'information.dart';
 import 'package:collection/collection.dart';
 
-class Informations {
-  String? message;
-  List<Information>? data;
+import 'hospital.dart';
 
-  Informations({this.message, this.data});
+class Hospitals {
+  final String? message;
+  final List<Healthenter>? data;
+
+  const Hospitals({this.message, this.data});
 
   @override
-  String toString() => 'Informations(message: $message, informations: $data)';
+  String toString() => 'Event(message: $message, data: $data)';
 
-  factory Informations.fromMap(Map<String, dynamic> data) => Informations(
+  factory Hospitals.fromMap(Map<String, dynamic> data) => Hospitals(
         message: data['message'] as String?,
         data: (data['data'] as List<dynamic>?)
-            ?.map((e) => Information.fromMap(e as Map<String, dynamic>))
+            ?.map((e) => Healthenter.fromMap(e as Map<String, dynamic>))
             .toList(),
       );
 
@@ -26,30 +27,30 @@ class Informations {
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [Informations].
-  factory Informations.fromJson(String data) {
-    return Informations.fromMap(json.decode(data) as Map<String, dynamic>);
+  /// Parses the string and returns the resulting Json object as [Hospitals].
+  factory Hospitals.fromJson(String data) {
+    return Hospitals.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [Informations] to a JSON string.
+  /// Converts [Hospitals] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  Informations copyWith({
+  Hospitals copyWith({
     String? message,
-    List<Information>? informations,
+    List<Healthenter>? data,
   }) {
-    return Informations(
+    return Hospitals(
       message: message ?? this.message,
-      data: informations ?? this.data,
+      data: data ?? this.data,
     );
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    if (other is! Informations) return false;
+    if (other is! Hospitals) return false;
     final mapEquals = const DeepCollectionEquality().equals;
     return mapEquals(other.toMap(), toMap());
   }

@@ -1,6 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/features/user/data/data_sources/remote_data_source.dart';
+import 'package:alerthub/features/user/data/repositorites/user_repository_impl.dart';
+import 'package:alerthub/features/user/domain/usecases/user_service.dart';
+import 'package:alerthub/features/user/presentation/controller/emergency_info_controller.dart';
 
 class EmergencyInformationBar extends StatefulWidget {
   const EmergencyInformationBar({super.key});
@@ -11,14 +15,33 @@ class EmergencyInformationBar extends StatefulWidget {
 }
 
 class _EmergencyInformationBarState extends State<EmergencyInformationBar> {
-  final descriptionController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
-  bool isLoading = false;
-  bool isDeleting = false;
+  final tag = UniqueKey().toString();
 
   @override
   void initState() {
     super.initState();
+    Get.put(
+      EmergencyInfoController(
+        UserService(
+          UserRepositoryImpl(
+            UserRemoteDataSource(),
+          ),
+        ),
+      ),
+      tag: tag,
+    );
+
+    Future.delayed(Duration.zero, () => getData());
+  }
+
+  getData() async {
+    try {
+      final controller = Get.find<EmergencyInfoController>(tag: tag);
+
+      await controller.fetchEmergencyInfo();
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
   }
 
   @override
@@ -33,65 +56,70 @@ class _EmergencyInformationBarState extends State<EmergencyInformationBar> {
           topRight: Radius.circular(space12),
         ),
       ),
-      child: buildBody(),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: buildBody(),
+      ),
     );
   }
 
-  saveForm() {
+  saveForm() async {
     FocusScope.of(context).unfocus();
-    final isValid = formKey.currentState?.validate() ?? false;
-
-    if (!isValid) {
-      context
-          .showErrorSnackBar(context.localization?.kindlyFillAllFields ?? '');
-      return;
-    }
-
-    if (isLoading || isDeleting) {
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-    });
 
     try {
-      // TODO: do the work of updating here.
+      final controller = Get.find<EmergencyInfoController>(tag: tag);
+
+      await controller.updateDescription();
 
       context.router.maybePop();
     } catch (exception) {
       context.showErrorSnackBar('An error occurred');
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   List<Widget> buildDescription() {
     return [
       Text('Description', style: satoshi500S12).fadeInAndMoveFromBottom(),
       verticalSpacer8,
-      TextFormField(
-        textInputAction: TextInputAction.next,
-        decoration: context.inputDecoration(
-            hintText: context.localization?.description ?? ''),
-        keyboardType: TextInputType.text,
-        minLines: 9,
-        maxLines: null,
-        validator: (value) {
-          if (value == null || value.trim().isEmpty) {
-            return 'Kindly provide the description.';
-          }
+      Obx(() {
+        final controller = Get.find<EmergencyInfoController>(tag: tag);
+        final descriptionController = controller.descriptionController;
+        return TextFormField(
+          textInputAction: TextInputAction.next,
+          decoration: context.inputDecoration(
+              hintText: context.localization?.description ?? ''),
+          keyboardType: TextInputType.text,
+          minLines: 9,
+          maxLines: null,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Kindly provide the description.';
+            }
 
-          return null;
-        },
-        controller: descriptionController,
-      ).fadeInAndMoveFromBottom(),
+            return null;
+          },
+          controller: descriptionController,
+        ).fadeInAndMoveFromBottom();
+      }),
     ];
   }
 
   buildBody() {
+    return Obx(() {
+      final controller = Get.find<EmergencyInfoController>(tag: tag);
+      final formKey = controller.formKey;
+      final isFetchingData = controller.isFetchingData;
+      final hasError = controller.hasError;
+
+      return isFetchingData
+          ? context.buildLoadingWidget()
+          : hasError
+              ? context.buildErrorWidget(onRetry: () => getData())
+              : buildBodyItem(formKey);
+    });
+  }
+
+  Form buildBodyItem(GlobalKey<FormState> formKey) {
     return Form(
       key: formKey,
       child: Column(
@@ -112,11 +140,15 @@ class _EmergencyInformationBarState extends State<EmergencyInformationBar> {
           verticalSpacer12,
           ...buildDescription(),
           verticalSpacer12,
-          AppBtn.from(
-            onPressed: () => saveForm(),
-            text: 'Update',
-            isLoading: isLoading,
-          ),
+          Obx(() {
+            final controller = Get.find<EmergencyInfoController>(tag: tag);
+            final isLoading = controller.isLoading;
+            return AppBtn.from(
+              onPressed: () => saveForm(),
+              text: 'Update',
+              isLoading: isLoading,
+            );
+          }),
           verticalSpacer12,
         ],
       ),

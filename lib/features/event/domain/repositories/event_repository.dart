@@ -1,5 +1,6 @@
 import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:alerthub/features/event/data/model/event/events.dart';
+import 'package:alerthub/features/event/data/model/map_data/map_data.dart';
 import 'package:alerthub/features/hospitals/data/model/hospital/hospitals.dart';
 
 abstract class EventRepository {
@@ -22,7 +23,7 @@ abstract class EventRepository {
     required int page,
   });
 
-  Future<Events> map({
+  Future<MapData> map({
     required double radius,
     required double lat,
     required double lng,

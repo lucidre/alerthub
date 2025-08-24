@@ -2,19 +2,19 @@ import 'dart:io';
 
 import 'package:alerthub/features/hospitals/data/model/hospital/hospital.dart';
 import 'package:alerthub/features/hospitals/data/model/hospital/hospitals.dart';
+import 'package:alerthub/shared/api/server_method.dart';
 
 import 'package:http/http.dart';
 
 class HospitalRemoteDataSource {
+  //TODO FIX ENDPOINT HERE
   Future<Hospital> getHospital(String id) async {
     try {
-      /* final response = await $get('event/$id');
+      final response = await $get('healthcenter/$id');
       if (response.isError) {
         return Future.error(response.message);
       }
-      return Hospital.fromMap(response.data['data']); */
-
-      return sampleHospitals.firstWhere((e) => e.id == id);
+      return Hospital.fromMap(response.data['data']);
     } on SocketException {
       return Future.error('No network connection.');
     } on ClientException {
@@ -29,21 +29,21 @@ class HospitalRemoteDataSource {
     }
   }
 
+//TODO FIX ENDPOINT HERE,
   Future<Hospitals> nearbyHospitals(
       {required int radius,
       required double lat,
       required double lng,
       required int page}) async {
     try {
-      /*      final response = await $get(
-          'event/nearby?radius=$radius&lng=$lng&lat=$lng&page=$page');
+      final response = await $get(
+        'healthcenter/nearby?radius=$radius&lng=$lng&lat=$lat&page=$page',
+      );
 
       if (response.isError) {
         return Future.error(response.message);
       }
-      return Hospitals.fromMap(response.data); */
-
-      return const Hospitals(message: null, data: sampleHospitals);
+      return Hospitals.fromMap(response.data);
     } on SocketException {
       return Future.error('No network connection.');
     } on ClientException {

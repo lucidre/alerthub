@@ -24,37 +24,16 @@ class UserEmergencyContactsController extends GetxController {
     }
   }
 
-  insertOrUpdateContact(Contact contact) {
-    final index = contacts.indexWhere((t) => t.id == contact.id);
-    debugPrint("$index");
-    if (index == -1) {
-      contact.id = UniqueKey().toString();
-      _contacts.add(contact);
-    } else {
-      _contacts[index] = contact;
-    }
-    _contacts.refresh();
-  }
-
   Future<void> getEmergencyContacts() async {
     isLoading = true;
     hasError = false;
-    contacts = [];
+    contacts.clear();
 
     try {
-      /*      final contacts = await userService.getEmergencyContacts();
-      this.contacts = contacts.data ?? []; */
+      final contacts = await userService.getEmergencyContact();
+      this.contacts = contacts.data ?? [];
       hasError = false;
       isLoading = false;
-      /*  contacts = [
- Contact( 
-  fullName: 'Oti Temitope', 
-  phoneNumber: '+2348147486278', 
-  email: 'otitemitope6@gmail.com', 
-
- ), 
-        //
-      ];  */
     } catch (exception) {
       hasError = true;
       isLoading = false;

@@ -5,7 +5,6 @@ import 'package:alerthub/features/event/data/repositorites/event_repository_impl
 import 'package:alerthub/features/event/domain/usecases/event_service.dart';
 import 'package:alerthub/features/event/presentation/bars/events_priority_picker_bar.dart';
 import 'package:alerthub/features/event/presentation/controller/event_create_controller.dart';
-import 'package:alerthub/features/event/presentation/widget/address_textfield.dart';
 import 'package:alerthub/features/event/presentation/widget/create_event_image_item.dart';
 import 'package:alerthub/features/event/data/model/event/event.dart';
 import 'package:alerthub/common_libs.dart';
@@ -240,7 +239,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
             child: Icon(
               CupertinoIcons.camera_on_rectangle,
               size: 70,
-              color: context.textColor.withOpacity(.8),
+              color: context.textColor.withValues(alpha: .8),
             ),
           ),
           verticalSpacer8,

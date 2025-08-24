@@ -3,21 +3,19 @@ import 'dart:io';
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/features/informations/data/model/informations/information.dart';
 import 'package:alerthub/features/informations/data/model/informations/informations.dart';
+import 'package:alerthub/shared/api/server_method.dart';
 
 import 'package:http/http.dart';
 
 class InformationRemoteDataSource {
-  Future<Informations> getInformations() async {
+  Future<Informations> getInformations(int page) async {
     try {
-      // final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      // final response = await $get('information/get_informations/$uid');
+      final response = await $get('information/information?page=$page');
 
-      /*   if (response.isError) {
+      if (response.isError) {
         return Future.error(response.message);
-      } */
-      // return Informations.fromMap(response.data);
-
-      return _infos;
+      }
+      return Informations.fromMap(response.data);
     } on SocketException {
       return Future.error('No network connection.');
     } on ClientException {
@@ -33,7 +31,7 @@ class InformationRemoteDataSource {
   }
 }
 
-final _infos = Informations(data: [
+final infos = Informations(data: [
   Information(
     url: '2CQpyA485wc',
     title: 'Heart Attack Emergency Response',

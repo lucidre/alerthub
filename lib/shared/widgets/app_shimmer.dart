@@ -18,10 +18,10 @@ class AppShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return shimmerEnabled
         ? Shimmer.fromColors(
-            baseColor: shimmerColor?.withOpacity(.9) ??
-                context.textColor.withOpacity(0.1),
-            highlightColor: shimmerColor?.withOpacity(.4) ??
-                context.textColor.withOpacity(0.2),
+            baseColor: shimmerColor?.withValues(alpha: .9) ??
+                context.textColor.withValues(alpha: 0.1),
+            highlightColor: shimmerColor?.withValues(alpha: .4) ??
+                context.textColor.withValues(alpha: 0.2),
             child: shimmerEnabled ? (shimmerChild ?? child) : child,
           )
         : child;

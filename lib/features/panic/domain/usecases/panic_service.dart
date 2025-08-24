@@ -10,10 +10,16 @@ class PanicService {
     required double latitude,
     required double longitude,
     required bool isOnOrOff,
+    required bool broadcastToCommunity,
+    required bool broadcastToProviders,
+    required bool broadcastToContacts,
   }) =>
       repository.panicModeToggle(
         latitude: latitude,
         longitude: longitude,
         isOnOrOff: isOnOrOff,
+        broadcastToCommunity: broadcastToCommunity,
+        broadcastToProviders: broadcastToProviders,
+        broadcastToContacts: broadcastToContacts,
       );
 }

@@ -51,7 +51,7 @@ class _HospitalAccountSetupScreenState
 
     try {
       final controller = Get.find<HospitalAccoutSetupController>(tag: tag);
-      await controller.signUpHospital();
+      await controller.signUpHospital(widget.email);
       context.showInformationSnackBar('Account details updated successfully.');
       context.router.replace(const UserSignInRoute());
     } catch (exception) {
@@ -88,6 +88,8 @@ class _HospitalAccountSetupScreenState
                 buildHospitalName(),
                 verticalSpacer12,
                 ...buildHelpLine(),
+                verticalSpacer12,
+                buildDescription(),
                 verticalSpacer12,
                 ...buildCountry(),
                 verticalSpacer12,
@@ -278,6 +280,39 @@ class _HospitalAccountSetupScreenState
     );
   }
 
+  Widget buildDescription() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Description', style: satoshi500S12).fadeInAndMoveFromBottom(),
+        verticalSpacer8,
+        Obx(() {
+          final controller = Get.find<HospitalAccoutSetupController>(tag: tag);
+
+          final descriptionFocusNode = controller.descriptionFocusNode;
+          final descriptionController = controller.descriptionController;
+
+          return TextFormField(
+            textInputAction: TextInputAction.done,
+            focusNode: descriptionFocusNode,
+            minLines: 4,
+            maxLines: null,
+            decoration: context.inputDecoration(hintText: 'Description'),
+            keyboardType: TextInputType.name,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Kindly provide a description about your healthcenter.';
+              }
+
+              return null;
+            },
+            controller: descriptionController,
+          );
+        }).fadeInAndMoveFromBottom(),
+      ],
+    );
+  }
+
   List<Widget> buildHelpLine() {
     return [
       Text('Helpline', style: satoshi500S12).fadeInAndMoveFromBottom(),
@@ -286,10 +321,12 @@ class _HospitalAccountSetupScreenState
         final controller = Get.find<HospitalAccoutSetupController>(tag: tag);
         final helplineController = controller.helplineController;
         final helplineFocusNode = controller.helplineFocusNode;
-
+        final descriptionFocusNode = controller.descriptionFocusNode;
         return TextFormField(
           textInputAction: TextInputAction.next,
           focusNode: helplineFocusNode,
+          onFieldSubmitted: (_) =>
+              FocusScope.of(context).requestFocus(descriptionFocusNode),
           decoration: context.inputDecoration(
               hintText: context.localization?.enterPhoneNumber ?? ''),
           keyboardType: TextInputType.phone,

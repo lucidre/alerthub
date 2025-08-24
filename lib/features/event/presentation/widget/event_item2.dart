@@ -101,7 +101,7 @@ class EventItem2 extends StatelessWidget {
             height: 150,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             decoration: BoxDecoration(
-              color: blackShade1Color.withOpacity(.1),
+              color: blackShade1Color.withValues(alpha: .1),
               border: Border.all(
                 color: neutral200,
                 strokeAlign: BorderSide.strokeAlignOutside,

@@ -217,7 +217,7 @@ class _EventsMapBarState extends State<EventsMapBar> {
             clipBehavior: Clip.antiAliasWithSaveLayer,
             margin: const EdgeInsets.all(space4),
             decoration: BoxDecoration(
-              color: blackColor.withOpacity(.1),
+              color: blackColor.withValues(alpha: .1),
               borderRadius: BorderRadius.circular(space4),
               border: Border.all(
                 color: neutral200,

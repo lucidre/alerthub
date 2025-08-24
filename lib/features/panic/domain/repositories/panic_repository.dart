@@ -4,5 +4,8 @@ abstract class PanicRepository {
     required double latitude,
     required double longitude,
     required bool isOnOrOff,
+    required bool broadcastToCommunity,
+    required bool broadcastToProviders,
+    required bool broadcastToContacts,
   });
 }

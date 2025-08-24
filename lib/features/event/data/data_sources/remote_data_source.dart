@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alerthub/features/event/data/model/map_data/map_data.dart';
 import 'package:alerthub/features/hospitals/data/model/hospital/hospital.dart';
 import 'package:alerthub/features/hospitals/data/model/hospital/hospitals.dart';
 import 'package:alerthub/shared/api/server_method.dart';
@@ -38,15 +39,14 @@ class EventRemoteDataSource {
       required double lng,
       required int page}) async {
     try {
-      /*      final response = await $get(
-          'event/nearby?radius=$radius&lng=$lng&lat=$lng&page=$page');
+      final response = await $get(
+        'healthcenter/nearby?radius=$radius&lng=$lng&lat=$lat&page=$page',
+      );
 
       if (response.isError) {
         return Future.error(response.message);
       }
-      return Hospitals.fromMap(response.data); */
-
-      return const Hospitals(message: null, data: sampleHospitals);
+      return Hospitals.fromMap(response.data);
     } on SocketException {
       return Future.error('No network connection.');
     } on ClientException {
@@ -90,7 +90,7 @@ class EventRemoteDataSource {
       required int page}) async {
     try {
       final response = await $get(
-          'event/nearby?radius=$radius&lng=$lng&lat=$lng&page=$page');
+          'center/healthcenter/nearby?radius=$radius&lng=$lng&lat=$lat&page=$page');
 
       if (response.isError) {
         return Future.error(response.message);
@@ -110,17 +110,18 @@ class EventRemoteDataSource {
     }
   }
 
-  Future<Events> map(
+//TODO UPDATE ENDPOINT
+  Future<MapData> map(
       {required double radius,
       required double lat,
       required double lng}) async {
     try {
-      final response = await $get('event/map?radius=$radius&lng=$lng&lat=$lng');
+      final response = await $get('users/map?radius=$radius&lng=$lng&lat=$lat');
 
       if (response.isError) {
         return Future.error(response.message);
       }
-      return Events.fromMap(response.data);
+      return MapData.fromMap(response.data);
     } on SocketException {
       return Future.error('No network connection.');
     } on ClientException {

@@ -1,5 +1,4 @@
 import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/shared/constants/package.dart';
 
 class AppPageIndicator extends StatefulWidget {
   final int count;
@@ -73,7 +72,7 @@ class _AppPageIndicatorState extends State<AppPageIndicator> {
             decoration: BoxDecoration(
               border: Border.all(color: blackShade1Color),
               color: Color.lerp(
-                whiteColor.withOpacity(widget.opacity ?? .3),
+                whiteColor.withValues(alpha: widget.opacity ?? .3),
                 whiteColor,
                 value,
               ),

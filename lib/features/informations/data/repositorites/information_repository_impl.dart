@@ -8,9 +8,9 @@ class InformationRepositoryImpl implements InformationRepository {
   InformationRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Informations> getInformations() async {
+  Future<Informations> getInformations(int page) async {
     try {
-      final response = await remoteDataSource.getInformations();
+      final response = await remoteDataSource.getInformations(page);
       return response;
     } catch (exception) {
       return Future.error(exception);

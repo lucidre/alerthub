@@ -1,5 +1,4 @@
 import 'package:alerthub/features/event/data/model/event/event.dart';
-import 'package:alerthub/features/hospitals/data/model/hospital/hospital.dart';
 import 'package:alerthub/features/event/domain/usecases/event_service.dart';
 import 'package:alerthub/common_libs.dart';
 

@@ -1,5 +1,5 @@
 import 'dart:io';
-
+ 
 import 'package:alerthub/features/event/data/model/map_data/map_data.dart';
 import 'package:alerthub/features/hospitals/data/model/hospital/hospital.dart';
 import 'package:alerthub/features/hospitals/data/model/hospital/hospitals.dart';
@@ -40,7 +40,7 @@ class EventRemoteDataSource {
       required int page}) async {
     try {
       final response = await $get(
-        'healthcenter/nearby?radius=$radius&lng=$lng&lat=$lat&page=$page',
+        'center/healthcenter/nearby?radius=$radius&lng=$lng&lat=$lat&page=$page',
       );
 
       if (response.isError) {
@@ -366,7 +366,7 @@ class EventRemoteDataSource {
   }
 }
 
-const sampleHospitals = [
+/* const sampleHospitals = [
   Hospital(
     id: 'lagos‑001',
     creatorId: 'user123',
@@ -454,4 +454,4 @@ const sampleHospitals = [
     helpline: '+2348056789234',
     drivers: ['driverH'],
   ),
-];
+]; */

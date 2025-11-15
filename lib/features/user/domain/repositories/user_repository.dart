@@ -1,6 +1,6 @@
 import 'package:alerthub/features/user/data/model/contacts/contacts.dart';
 import 'package:alerthub/features/user/data/model/user_data/user_data.dart';
-
+import 'package:alerthub/features/hospitals/data/model/hospital/hospital_data.dart';
 import 'package:alerthub/features/user/data/model/account_types.dart';
 
 abstract class UserRepository {
@@ -26,6 +26,8 @@ abstract class UserRepository {
   });
 
   Future<UserData> getUser();
+
+  Future<HospitalData> getHospital();
 
   Future<String> deleteUser();
 

@@ -2,6 +2,7 @@ import 'package:alerthub/features/user/data/model/contacts/contacts.dart';
 import 'package:alerthub/features/user/data/model/user_data/user_data.dart';
 import 'package:alerthub/features/user/domain/repositories/user_repository.dart';
 import 'package:alerthub/features/user/data/model/account_types.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/hospital_data.dart';
 
 class UserService {
   final UserRepository repository;
@@ -11,6 +12,8 @@ class UserService {
   Future<String> deleteUser() => repository.deleteUser();
 
   Future<UserData> getUser() => repository.getUser();
+
+  Future<HospitalData> getHospital() => repository.getHospital();
 
   Future<String> getEmergencyInformation() =>
       repository.getEmergencyInformation();

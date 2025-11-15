@@ -83,7 +83,7 @@ class HospitalAccoutSetupController extends GetxController {
     }
 
     if (selectedCountry == null) {
-      throw 'Kindly select your country to proceed.';
+      throw 'Kindly select your country to proceed.'; 
     }
 
     formKey.currentState?.save();

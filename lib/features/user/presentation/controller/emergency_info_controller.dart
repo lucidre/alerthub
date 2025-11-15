@@ -23,6 +23,7 @@ class EmergencyInfoController extends GetxController {
   final _descriptionController = TextEditingController();
   TextEditingController get descriptionController => _descriptionController;
 
+  
   Future<void> fetchEmergencyInfo() async {
     if (isFetchingData) {
       return;
@@ -31,8 +32,9 @@ class EmergencyInfoController extends GetxController {
     isFetchingData = true;
     hasError = false;
     try {
-      final info = await userService.getEmergencyInformation();
-      _descriptionController.text = info;
+      final user = await userService.getUser();
+
+      _descriptionController.text = user.data?.description ?? '';
       isFetchingData = false;
     } catch (error) {
       hasError = true;
@@ -53,10 +55,12 @@ class EmergencyInfoController extends GetxController {
     try {
       final description = descriptionController.text.trim();
       await userService.updateEmergencyInformation(description);
+      isLoading = false;
     } catch (exception) {
+      isLoading = false;
       return Future.error(exception.toString());
     }
 
-    isLoading = false;
+
   }
 }

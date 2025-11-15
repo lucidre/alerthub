@@ -6,6 +6,7 @@ import 'package:alerthub/features/splash/data/repositorites/splash_repository_im
 import 'package:alerthub/features/splash/domain/usecases/splash_service.dart';
 import 'package:alerthub/features/splash/presentation/controller/splash_controller.dart';
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/features/user/data/model/account_types.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 @RoutePage()
@@ -80,7 +81,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   void route() async {
     if (FirebaseAuth.instance.currentUser != null) {
-      context.router.replace(const UserMainRoute());
+      
+      final type = AppPreferences.userType;
+
+      if (type == AccountType.healthcare.dropDownName) {
+        Get.find<HealthCareBottomBarController>().goToHome();
+        context.router.push(const HealthCareMainRoute());
+      } else if (type == AccountType.user.dropDownName) {
+        Get.find<UserBottomBarController>().goToHome();
+        context.router.push(const UserMainRoute());
+      }
     } else {
       context.router.replace(const OnboardingRoute());
     }

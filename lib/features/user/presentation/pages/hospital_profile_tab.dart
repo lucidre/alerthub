@@ -1,19 +1,18 @@
 import 'package:alerthub/features/user/data/data_sources/remote_data_source.dart';
 import 'package:alerthub/features/user/data/repositorites/user_repository_impl.dart';
 import 'package:alerthub/features/user/domain/usecases/user_service.dart';
-import 'package:alerthub/features/user/presentation/bars/emergency_information_bar.dart';
-import 'package:alerthub/features/user/presentation/controller/user_tab_controller.dart';
+import 'package:alerthub/features/user/presentation/controller/hospital_tab_controller.dart';
 import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/features/user/presentation/widget/user_profile_card.dart';
+import 'package:alerthub/features/user/presentation/widget/hospital_profile_card.dart';
 
-class UserProfileTab extends StatefulWidget {
-  const UserProfileTab({super.key});
+class HospitalProfileTab extends StatefulWidget {
+  const HospitalProfileTab({super.key});
 
   @override
-  State<UserProfileTab> createState() => _UserProfileTabState();
+  State<HospitalProfileTab> createState() => _HospitalProfileTabState();
 }
 
-class _UserProfileTabState extends State<UserProfileTab> {
+class _HospitalProfileTabState extends State<HospitalProfileTab> {
   final refreshController = RefreshController(initialRefresh: false);
 
   @override
@@ -21,7 +20,7 @@ class _UserProfileTabState extends State<UserProfileTab> {
     super.initState();
 
     Get.put(
-      UserTabController(
+      HospitalTabController(
         UserService(
           UserRepositoryImpl(
             UserRemoteDataSource(),
@@ -32,7 +31,7 @@ class _UserProfileTabState extends State<UserProfileTab> {
   }
 
   void onRefresh() async {
-    final controller = Get.find<UserTabController>();
+    final controller = Get.find<HospitalTabController>();
     await controller.getUpcData();
     refreshController.refreshCompleted();
   }
@@ -65,33 +64,7 @@ class _UserProfileTabState extends State<UserProfileTab> {
               padding: const EdgeInsets.all(0),
               physics: const BouncingScrollPhysics(),
               children: [
-                const UserProfileCard().fadeInAndMoveFromBottom(),
-                verticalSpacer12,
-                buildItem(
-                  icon: Icons.info_rounded,
-                  title: 'Emergency information',
-                  onPressed: () => context.showBottomBar(
-                    child: const EmergencyInformationBar(),
-                  ),
-                ),
-                buildItem(
-                  icon: Icons.sos_rounded,
-                  title: 'Emergency contact',
-                  onPressed: () => context.router.push(
-                    const UserEmergencyContactRoute(),
-                  ),
-                ),
-                /*    buildItem(
-                    icon: Icons.local_hospital_rounded,
-                    title: 'Registered healthcare',
-                    onPressed: () {}), */
-                buildItem(
-                  icon: Icons.event_rounded,
-                  title: 'Posted events',
-                  onPressed: () => context.router.push(
-                    const UserPostedEventsRoute(),
-                  ),
-                ),
+                const HospitalProfileCard().fadeInAndMoveFromBottom(),
                 buildItem(
                   icon: Icons.notifications_active_outlined,
                   title: 'Notifications',
@@ -103,7 +76,6 @@ class _UserProfileTabState extends State<UserProfileTab> {
                   title: 'Settings',
                   onPressed: () => context.router.push(const SettingsRoute()),
                 ),
-                
               ],
             ),
           ),

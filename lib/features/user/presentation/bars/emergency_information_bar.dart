@@ -34,6 +34,9 @@ class _EmergencyInformationBarState extends State<EmergencyInformationBar> {
     Future.delayed(Duration.zero, () => getData());
   }
 
+ 
+
+
   getData() async {
     try {
       final controller = Get.find<EmergencyInfoController>(tag: tag);
@@ -48,7 +51,12 @@ class _EmergencyInformationBarState extends State<EmergencyInformationBar> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(space12),
+      padding: EdgeInsets.only(
+        top: space12,
+        left: space12,
+        right: space12,
+        bottom: space12 + context.bottom,
+      ),
       decoration: BoxDecoration(
         color: context.backgroundColor,
         borderRadius: const BorderRadius.only(
@@ -78,13 +86,13 @@ class _EmergencyInformationBarState extends State<EmergencyInformationBar> {
   }
 
   List<Widget> buildDescription() {
+    final controller = Get.find<EmergencyInfoController>(tag: tag);
+    final descriptionController = controller.descriptionController;
     return [
       Text('Description', style: satoshi500S12).fadeInAndMoveFromBottom(),
       verticalSpacer8,
-      Obx(() {
-        final controller = Get.find<EmergencyInfoController>(tag: tag);
-        final descriptionController = controller.descriptionController;
-        return TextFormField(
+      TextFormField(
+
           textInputAction: TextInputAction.next,
           decoration: context.inputDecoration(
               hintText: context.localization?.description ?? ''),
@@ -99,8 +107,7 @@ class _EmergencyInformationBarState extends State<EmergencyInformationBar> {
             return null;
           },
           controller: descriptionController,
-        ).fadeInAndMoveFromBottom();
-      }),
+      ).fadeInAndMoveFromBottom(), 
     ];
   }
 

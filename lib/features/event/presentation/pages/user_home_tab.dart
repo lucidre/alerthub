@@ -3,6 +3,8 @@ import 'package:alerthub/features/event/data/repositorites/event_repository_impl
 import 'package:alerthub/features/event/domain/usecases/event_service.dart';
 import 'package:alerthub/features/event/presentation/controller/user_home_tab_controller.dart';
 import 'package:alerthub/features/hospitals/presentation/widget/hospitals_home_item.dart';
+
+import 'package:alerthub/features/hospitals/presentation/widget/panic_home_item.dart';
 import 'package:alerthub/features/event/presentation/widget/events_nearby_home_item.dart';
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/features/event/presentation/widget/events_ongoing_home_item.dart';
@@ -110,6 +112,8 @@ class _UserHomeTabState extends State<UserHomeTab> {
         ));
   }
 
+ 
+
   buildHeader() {
     return [
       Padding(
@@ -165,6 +169,8 @@ class _UserHomeTabState extends State<UserHomeTab> {
           child: Column(
             children: [
               buildPanicSection().fadeInAndMoveFromBottom(),
+              verticalSpacer16,
+              const PanicHomeItem(),
               verticalSpacer16,
               buildSearchField().fadeInAndMoveFromBottom(),
               verticalSpacer16,

@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:alerthub/features/hospitals/data/model/hospital/hospital_data.dart';
 import 'package:alerthub/features/user/data/model/account_types.dart';
 import 'package:alerthub/features/user/data/model/contacts/contacts.dart';
 import 'package:alerthub/shared/api/server_method.dart';
@@ -114,7 +114,7 @@ class UserRemoteDataSource {
   }) async {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      final response = await $put('center/heathcenter/$uid', body: {
+      final response = await $post('center/heathcenter', body: {
         "userId": uid,
         "fullName": hospitalName,
         "email": email,
@@ -154,6 +154,29 @@ class UserRemoteDataSource {
         return Future.error(response.message);
       }
       return UserData.fromMap(response.data);
+    } on SocketException {
+      return Future.error('No network connection.');
+    } on ClientException {
+      return Future.error('No network connection.');
+    } catch (exception) {
+      if (exception
+          .toString()
+          .contains('ClientException with SocketException')) {
+        return Future.error('No network connection.');
+      }
+      return Future.error(exception.toString());
+    }
+  }
+
+  Future<HospitalData> getHospital() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+      final response = await $get('center/healthcenter/$uid');
+
+      if (response.isError) {
+        return Future.error(response.message);
+      }
+      return HospitalData.fromMap(response.data);
     } on SocketException {
       return Future.error('No network connection.');
     } on ClientException {
@@ -285,7 +308,7 @@ class UserRemoteDataSource {
     }
   }
 
-//TODO ADD THIS ENDPOINT HERE.
+ 
   Future<String> getEmergencyInformation() async {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -309,16 +332,17 @@ class UserRemoteDataSource {
     }
   }
 
-//TODO ADD THIS ENDPOINT HERE.
+ 
   Future<void> updateEmergencyInformation(String description) async {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      final response = await $post('user/emergency_information/$uid',
+      final response = await $put('user/update_user_description/$uid',
           body: {'description': description});
-
+ 
       if (response.isError) {
         return Future.error(response.message);
       }
+      
       return response.message;
     } on SocketException {
       return Future.error('No network connection.');

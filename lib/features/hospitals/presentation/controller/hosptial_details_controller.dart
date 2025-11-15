@@ -12,7 +12,8 @@ class HospitalDetailsController extends GetxController {
 
   // Getters
   bool get isLoading => _isLoading.value;
-  bool get hasError => _hasError.value;
+  bool get hasError => _hasError.value; 
+  
   Hospital? get hospital => _hospital.value;
 
   // Setters
@@ -25,7 +26,8 @@ class HospitalDetailsController extends GetxController {
     hasError = false;
 
     try {
-      hospital = await hospitalService.getHospital(hospitalId);
+      final data = await hospitalService.getHospital(hospitalId);
+      hospital = data.data; 
       hasError = false;
       isLoading = false;
     } catch (exception) {

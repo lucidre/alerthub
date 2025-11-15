@@ -1,12 +1,12 @@
 import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/features/user/data/model/user_data/user.dart';
-import 'package:alerthub/features/user/domain/usecases/user_service.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/driver.dart';
+import 'package:alerthub/features/hospitals/domain/usecases/hospital_service.dart';
 
 class HealthCareDriverListController extends GetxController {
-  final UserService userService;
-  HealthCareDriverListController(this.userService);
+  final HospitalService service;
+  HealthCareDriverListController(this.service);
 
-  final RxList<User> _users = <User>[].obs;
+  final RxList<Driver> _drivers = <Driver>[].obs;
   final RxInt _page = 0.obs;
   final RxBool _isLoading = true.obs;
   final RxBool _hasError = false.obs;
@@ -17,7 +17,8 @@ class HealthCareDriverListController extends GetxController {
   final refreshController = RefreshController(initialRefresh: false);
 
   // Getters
-  List<User> get users => _users;
+
+  List<Driver> get drivers => _drivers;
   int get page => _page.value;
   bool get isLoading => _isLoading.value;
   bool get hasError => _hasError.value;
@@ -26,7 +27,7 @@ class HealthCareDriverListController extends GetxController {
   bool get isRefreshing => _isRefreshing.value;
 
   // Setters
-  set users(List<User> value) => _users.assignAll(value);
+  set drivers(List<Driver> value) => _drivers.assignAll(value);
   set page(int value) => _page.value = value;
   set isLoading(bool value) => _isLoading.value = value;
   set hasError(bool value) => _hasError.value = value;
@@ -46,42 +47,17 @@ class HealthCareDriverListController extends GetxController {
     page = 0;
     isLoading = true;
     hasError = false;
-    _users.clear();
+    _drivers.clear();
 
     try {
-      /*   final data = await eventService.search(search, page);
+      final data = await service.getDriversList(page);
       final list = data.data ?? [];
-      users = list; */
-      users = [
-        User(
-          fullName: loremIspidiumTitle,
-          email: 'testx@gmail.com',
-          phoneNumber: '+234 814 748 6278',
-          country: 'Nigeria',
-        ),
-        User(
-          fullName: loremIspidiumTitle,
-          email: 'testx@gmail.com',
-          phoneNumber: '+234 814 748 6278',
-          country: 'Nigeria',
-        ),
-        User(
-          fullName: loremIspidiumTitle,
-          email: 'testx@gmail.com',
-          phoneNumber: '+234 814 748 6278',
-          country: 'Nigeria',
-        ),
-        User(
-          fullName: loremIspidiumTitle,
-          email: 'testx@gmail.com',
-          phoneNumber: '+234 814 748 6278',
-          country: 'Nigeria',
-        ),
-      ];
+      drivers = list; 
+      
       if (isRefreshing) {
         refreshController.refreshCompleted();
       }
-      // allDataLoaded = list.isEmpty;
+      allDataLoaded = list.isEmpty;
       isLoading = false;
     } catch (exception) {
       hasError = true;
@@ -97,7 +73,7 @@ class HealthCareDriverListController extends GetxController {
     if (isLoading ||
         allDataLoaded ||
         isRefreshing ||
-        users.isEmpty ||
+        drivers.isEmpty ||
         oldDataLoading) {
       return;
     }
@@ -107,10 +83,10 @@ class HealthCareDriverListController extends GetxController {
     progressStream.add(true);
 
     try {
-      // final data = await eventService.search(search, page);
-      // final list = data.data ?? [];
-      // allDataLoaded = list.isEmpty;
-      // users.addAll(list);
+      final data = await service.getDriversList(page);
+      final list = data.data ?? [];
+      allDataLoaded = list.isEmpty;
+      drivers.addAll(list);
     } catch (exception) {
       allDataLoaded = true;
     }

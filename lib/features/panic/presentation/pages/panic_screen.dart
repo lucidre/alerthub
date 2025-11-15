@@ -50,8 +50,8 @@ class _PanicScreenState extends State<PanicScreen> {
             verticalSpacer12,
             buildInfo(),
             verticalSpacer12,
-            buildAlertSettings(),
-            verticalSpacer12,
+            /*     buildAlertSettings(),
+            verticalSpacer12, */ 
             buildLocation(),
             verticalSpacer12,
             AppBtn.from(

@@ -10,6 +10,7 @@ class User {
   String? phoneNumber;
   String? country;
   String? imageUrl;
+  String? description;
 
   User({
     this.mongoId,
@@ -19,11 +20,12 @@ class User {
     this.phoneNumber,
     this.country,
     this.imageUrl,
+    this.description,
   });
 
   @override
   String toString() {
-    return 'Data(mongoId: $mongoId, userId: $userId, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, country: $country, imageUrl: $imageUrl)';
+    return 'Data(mongoId: $mongoId, userId: $userId, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, country: $country, imageUrl: $imageUrl, description: $description)';
   }
 
   factory User.fromMap(Map<String, dynamic> data) => User(
@@ -34,6 +36,7 @@ class User {
         phoneNumber: data['phoneNumber'] as String?,
         country: data['country'] as String?,
         imageUrl: data['imageUrl'] as String?,
+        description: data['description'] as String?,
       );
 
   Map<String, dynamic> toMap() => {
@@ -44,6 +47,7 @@ class User {
         'phoneNumber': phoneNumber,
         'country': country,
         'imageUrl': imageUrl,
+        'description': description,
       };
 
   /// `dart:convert`
@@ -66,6 +70,7 @@ class User {
     String? phoneNumber,
     String? country,
     String? imageUrl,
+    String? description,
   }) {
     return User(
       mongoId: mongoId ?? this.mongoId,
@@ -75,6 +80,7 @@ class User {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       country: country ?? this.country,
       imageUrl: imageUrl ?? this.imageUrl,
+      description: description ?? this.description,
     );
   }
 
@@ -94,5 +100,6 @@ class User {
       email.hashCode ^
       phoneNumber.hashCode ^
       country.hashCode ^
+      description.hashCode ^
       imageUrl.hashCode;
 }

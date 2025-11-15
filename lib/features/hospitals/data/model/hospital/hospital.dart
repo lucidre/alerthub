@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 
- 
 class Hospital {
   final String? id;
-  final String? creatorId;
-  final String? name;
+  final String? userId;
+  final String? fullName;
+  final String? email;
   final String? description;
   final String? location;
   final double? lat;
@@ -14,11 +14,13 @@ class Hospital {
   final String? country;
   final String? helpline;
   final List<String>? drivers;
+  final List<String>? patients;
 
   const Hospital({
     this.id,
-    this.name,
-    this.creatorId,
+    this.userId,
+    this.fullName,
+    this.email,
     this.description,
     this.location,
     this.lat,
@@ -27,20 +29,17 @@ class Hospital {
     this.country,
     this.helpline,
     this.drivers,
+    this.patients,
   });
 
-  @override
-  String toString() {
-    return 'Datum(id: $id, name: $name, creatorId: $creatorId, description: $description, location: $location, lat: $lat, lng: $lng, images: $images, country: $country, helpline: $helpline, drivers: $drivers )';
-  }
-
   factory Hospital.fromMap(Map<String, dynamic> data) => Hospital(
-        id: data['id'] as String?,
-        name: data['name'] as String?,
-        creatorId: data['creatorId'] as String?,
+        id: data['mongoId'] as String?,
+        userId: data['userId'] as String?,
+        helpline: data['helpline'] as String?,
+        fullName: data['fullName'] as String?,
+        email: data['email'] as String?,
         description: data['description'] as String?,
         location: data['location'] as String?,
-        helpline: data['helpline'] as String?,
         country: data['country'] as String?,
         lat: (data['lat'] as num?)?.toDouble(),
         lng: (data['lng'] as num?)?.toDouble(),
@@ -50,19 +49,24 @@ class Hospital {
         drivers: (data['drivers'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList(),
+        patients: (data['patients'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList(),
       );
 
   Map<String, dynamic> toMap() => {
         'id': id,
-        'name': name,
-        'creatorId': creatorId,
+        'userId': userId,
+        'helpline': helpline,
+        'fullName': fullName,
+        'email': email,
         'description': description,
         'location': location,
         'lat': lat,
         'lng': lng,
         'images': images,
         'drivers': drivers,
-        'helpline': helpline,
+        'patients': patients,
         'country': country,
       };
 
@@ -89,13 +93,16 @@ class Hospital {
   @override
   int get hashCode =>
       id.hashCode ^
-      name.hashCode ^
+      userId.hashCode ^
+      helpline.hashCode ^
+      fullName.hashCode ^
+      email.hashCode ^
       description.hashCode ^
       location.hashCode ^
-      creatorId.hashCode ^
+      country.hashCode ^
       lat.hashCode ^
       lng.hashCode ^
       drivers.hashCode ^
-      helpline.hashCode ^
+      patients.hashCode ^
       images.hashCode;
 }

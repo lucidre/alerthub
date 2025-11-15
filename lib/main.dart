@@ -14,6 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final appRouter = Get.find<RouterController>().router;
     return GetX<LocaleController>(builder: (controller) {
+
+
       final languageCode = controller.languageCode;
       return GetMaterialApp.router(
         routerDelegate: appRouter.delegate(),

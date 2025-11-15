@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/features/user/data/model/user_data/user.dart';
+import 'package:alerthub/common_libs.dart'; 
+import 'package:alerthub/features/hospitals/data/model/hospital/driver.dart';
 
 class HealthCareDriverInformationBar extends StatefulWidget {
-  final User user;
+  final Driver user;
   const HealthCareDriverInformationBar({
     super.key,
     required this.user,
@@ -50,19 +50,11 @@ class _HealthCareDriverInformationBarState
           buildUserLocation(),
           verticalSpacer12,
           buildAttachedUser(),
-          if (true) ...[
-            verticalSpacer12,
-            AppBtn.from(
-              onPressed: () {},
-              text: 'Accept Rider',
-            ),
-            verticalSpacer12,
-            AppBtn.from(
-              bgColor: destructive700,
-              onPressed: () {},
-              text: 'Decline Rider',
-            )
-          ],
+          verticalSpacer16,
+          AppBtn.from(
+            onPressed: () => context.router.maybePop(1),
+            text: 'Edit Driver',
+          ), 
           verticalSpacer32,
         ],
       ),
@@ -102,7 +94,7 @@ class _HealthCareDriverInformationBarState
                   ),
                   borderRadius: BorderRadius.circular(space4),
                 ),
-                child: AppImage(imageUrl: widget.user.imageUrl ?? ''),
+                child: AppImage(imageUrl: widget.user.images ?? ''),
               ).fadeInAndMoveFromBottom(),
               horizontalSpacer12,
               Expanded(
@@ -121,13 +113,13 @@ class _HealthCareDriverInformationBarState
                   ).fadeInAndMoveFromBottom(),
                   verticalSpacer8,
                   Text(
-                    'Phone: ${widget.user.phoneNumber ?? 'Unknown'}',
+                    'Phone: ${widget.user.contact ?? 'Unknown'}',
                     style: satoshi500S12,
                     softWrap: true,
                   ).fadeInAndMoveFromBottom(),
                   verticalSpacer4,
                   Text(
-                    'Country: ${widget.user.country ?? 'Unknown'}',
+                    'Password: ${widget.user.password ?? 'Unknown'}',
                     style: satoshi500S12,
                     softWrap: true,
                   ).fadeInAndMoveFromBottom(),
@@ -160,7 +152,7 @@ class _HealthCareDriverInformationBarState
           context.divider,
           verticalSpacer12,
           Text(
-            loremIspidiumLong,
+            widget.user.location ?? '',
             style: satoshi500S12,
           ).fadeInAndMoveFromBottom(),
         ],
@@ -188,7 +180,7 @@ class _HealthCareDriverInformationBarState
           context.divider,
           verticalSpacer12,
           Text(
-            loremIspidiumLong,
+            'NO ATTACHED USER',
             style: satoshi500S12,
           ).fadeInAndMoveFromBottom(),
         ],

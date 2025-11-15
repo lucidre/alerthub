@@ -1,14 +1,15 @@
 import 'package:alerthub/common_libs.dart';
 import 'package:alerthub/features/hospitals/data/model/hospital/hospital.dart';
+import 'package:alerthub/features/panic/presentation/controller/panic_controller.dart';
 
-class HospitalItem extends StatelessWidget {
-  final Hospital hospital;
+class PanicItem extends StatelessWidget {
+  final PanicMode model;
   final bool shimmerEnabled;
   final VoidCallback onPressed;
 
-  const HospitalItem({
+  const PanicItem({
     super.key,
-    required this.hospital,
+    required this.model,
     required this.shimmerEnabled,
     required this.onPressed,
   });
@@ -21,7 +22,7 @@ class HospitalItem extends StatelessWidget {
       width: 300,
       height: 270,
       decoration: BoxDecoration(
-        color: whiteColor,
+        color: destructive600,
         borderRadius: BorderRadius.circular(space4),
         border: Border.all(color: neutral200),
       ),
@@ -58,6 +59,7 @@ class HospitalItem extends StatelessWidget {
   }
 
   buildBody(BuildContext context) {
+    final user = model.user;
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () => onPressed.call(),
@@ -76,32 +78,18 @@ class HospitalItem extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(space4),
             ),
-            child: AppImage(imageUrl: hospital.images?.first),
+            child: AppImage(imageUrl: user?.imageUrl ?? ''),
           ).fadeInAndMoveFromBottom(),
           verticalSpacer12,
           Text(
-            hospital.fullName ?? '',
-            style: satoshi600S14,
+            user?.fullName ?? '',
+            style: satoshi600S14.copyWith(color: whiteColor),
           ).fadeInAndMoveFromBottom(),
           verticalSpacer8,
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                    text: '${context.localization?.location ?? ''}: ',
-                    style: satoshi600S12),
-                TextSpan(
-                  text: hospital.location ?? '',
-                  style: satoshi500S12,
-                ),
-              ],
-            ),
-            textAlign: TextAlign.start,
-            textScaler: MediaQuery.of(context).textScaler,
+          Text(
+            'Contact: ${user?.phoneNumber ?? 'Unavailiable'}',
+            style: satoshi600S12.copyWith(color: whiteColor),
           ).fadeInAndMoveFromBottom(),
-          verticalSpacer8,
-          Text('Helpline: ${hospital.helpline}', style: satoshi600S12)
-              .fadeInAndMoveFromBottom(),
         ],
       ),
     );

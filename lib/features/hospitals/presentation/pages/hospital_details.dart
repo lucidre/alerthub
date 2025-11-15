@@ -80,7 +80,7 @@ class _HospitalDetailsScreenState extends State<HospitalDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           verticalSpacer12,
-          Text(hospital?.name ?? '', style: satoshi700S16)
+          Text(hospital?.fullName ?? '', style: satoshi700S16)
               .fadeInAndMoveFromBottom(),
           verticalSpacer16,
           buildImage(hospital),
@@ -90,8 +90,8 @@ class _HospitalDetailsScreenState extends State<HospitalDetailsScreen> {
           buildHelpline(hospital),
           verticalSpacer16,
           buildLocation(hospital),
-          if (FirebaseAuth.instance.currentUser?.uid ==
-              widget.hospital.creatorId) ...[
+          /*    if (FirebaseAuth.instance.currentUser?.uid ==
+              widget.hospital.userId) ...[
             verticalSpacer24,
             AppBtn.from(
               onPressed: () => editHospital(),
@@ -103,7 +103,7 @@ class _HospitalDetailsScreenState extends State<HospitalDetailsScreen> {
               text: 'Delete Healthcenters',
               bgColor: destructive600,
             ),
-          ],
+          ], */
           verticalSpacer32 * 3
         ],
       ),
@@ -294,7 +294,7 @@ class _HospitalDetailsScreenState extends State<HospitalDetailsScreen> {
       centerTitle: false,
       backgroundColor: context.backgroundColor,
       actions: [
-        if (FirebaseAuth.instance.currentUser?.uid == hospital?.creatorId)
+        if (FirebaseAuth.instance.currentUser?.uid == hospital?.userId)
           PopupMenuButton<int>(
             onSelected: (int position) {
               if (position == 0) {

@@ -1,10 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
-
+import 'package:alerthub/app_preferences.dart';
 import 'package:alerthub/features/user/data/data_sources/remote_data_source.dart';
 import 'package:alerthub/features/user/data/repositorites/user_repository_impl.dart';
 import 'package:alerthub/features/user/domain/usecases/user_service.dart';
 import 'package:alerthub/features/user/presentation/controller/user_sign_in_controller.dart';
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/features/user/data/model/account_types.dart';
 
 @RoutePage()
 class UserSignInScreen extends StatefulWidget {
@@ -15,12 +16,6 @@ class UserSignInScreen extends StatefulWidget {
 }
 
 class _UserSignInScreenState extends State<UserSignInScreen> {
-  final accountTypes = [
-    'User',
-    'Healthcare',
-    'Ambulance',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -41,15 +36,18 @@ class _UserSignInScreenState extends State<UserSignInScreen> {
 
     try {
       final controller = Get.find<UserSignInController>();
+      final type = controller.accountType!;
       await controller.signInUser();
-      //ensuring the bottom bar resets in case they are logging in again after logging out.
-      Get.find<UserBottomBarController>().goToHome();
+          
+ 
 
-      const accountType = '';
-      const verified = false;
-      if (accountType == accountTypes[2] && !verified) {
-        context.router.push(AmbulanceNotVerifiedRoute(email: email));
-      } else {
+      await AppPreferences.setUserType(type: type.dropDownName);
+
+      if (type == AccountType.healthcare) {
+        Get.find<HealthCareBottomBarController>().goToHome();
+        context.router.push(const HealthCareMainRoute());
+      } else if (type == AccountType.user) {
+        Get.find<UserBottomBarController>().goToHome();
         context.router.push(const UserMainRoute());
       }
     } catch (exception) {
@@ -103,6 +101,8 @@ class _UserSignInScreenState extends State<UserSignInScreen> {
               ...buildEmail(),
               verticalSpacer12,
               ...buildPassword(),
+              verticalSpacer12,
+              ...buildAccountType(),
               verticalSpacer16,
               Align(
                 alignment: Alignment.centerRight,
@@ -128,6 +128,53 @@ class _UserSignInScreenState extends State<UserSignInScreen> {
         ),
       );
     });
+  }
+
+  List<Widget> buildAccountType() {
+    return [
+      Text('Account type', style: satoshi500S12).fadeInAndMoveFromBottom(),
+      verticalSpacer8,
+      Obx(() {
+        final controller = Get.find<UserSignInController>();
+        final accountType = controller.accountType;
+
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+              border: Border.all(color: neutral200),
+              color: whiteBrownBg1Color,
+              borderRadius: BorderRadius.circular(cornersSmall)),
+          child: DropdownButton<AccountType>(
+            value: accountType,
+            icon: const Icon(
+              Icons.arrow_drop_down_rounded,
+              color: neutral400,
+            ),
+            hint: Text(
+              'Select your account type',
+              style: satoshi500S14.copyWith(color: neutral400),
+            ),
+            style: satoshi500S14,
+            alignment: Alignment.centerLeft,
+            underline: const SizedBox(width: double.infinity),
+            isExpanded: true,
+            borderRadius: BorderRadius.circular(space4),
+            padding: const EdgeInsets.only(left: space12, right: space12),
+            items: accountTypes.map((value) {
+              return DropdownMenuItem(
+                value: value,
+                child: Text(
+                  value.dropDownName,
+                  style: satoshi500S14,
+                ),
+              );
+            }).toList(),
+            onChanged: (AccountType? newValue) =>
+                controller.accountType = newValue,
+          ),
+        ).fadeInAndMoveFromBottom();
+      }),
+    ];
   }
 
   List<Widget> buildEmail() {

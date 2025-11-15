@@ -3,7 +3,7 @@ import 'package:alerthub/features/event/data/repositorites/event_repository_impl
 import 'package:alerthub/features/event/domain/usecases/event_service.dart';
 import 'package:alerthub/features/event/presentation/controller/healthcare_home_tab_controller.dart';
 import 'package:alerthub/common_libs.dart';
-
+import 'package:alerthub/features/hospitals/presentation/widget/panic_home_item.dart';
 import 'package:flutter/services.dart';
 
 class HealthCareHomeTab extends StatefulWidget {
@@ -19,9 +19,9 @@ class _HealthCareHomeTabState extends State<HealthCareHomeTab> {
   @override
   void initState() {
     super.initState();
-    Get.find<UserProfileController>().getUser();
+    Get.find<UserProfileController>().getHospital();
 
-    Get.put(
+    Get.put( 
       HealthCareHomeTabController(
         EventService(
           EventRepositoryImpl(
@@ -33,11 +33,7 @@ class _HealthCareHomeTabState extends State<HealthCareHomeTab> {
   }
 
   void onRefresh() async {
-    final controller = Get.find<HealthCareHomeTabController>();
-
-    await Future.wait<dynamic>(
-      [controller.getNearbyData(), controller.getOngoingData()],
-    );
+    
     refreshController.refreshCompleted();
   }
 
@@ -78,9 +74,9 @@ class _HealthCareHomeTabState extends State<HealthCareHomeTab> {
       Padding(
         padding: const EdgeInsets.only(left: space12, right: space12),
         child: GetX<UserProfileController>(builder: (controller) {
-          final user = controller.user;
+          final hospital = controller.hospital;
           return Text(
-            'Welcome back ${user?.fullName},',
+            'Welcome back ${hospital?.fullName},',
             style: satoshi500S14.copyWith(color: neutral300),
           );
         }),
@@ -113,9 +109,7 @@ class _HealthCareHomeTabState extends State<HealthCareHomeTab> {
   buildBody() {
     return FocusDetector(
       onFocusGained: () {
-        final controller = Get.find<HealthCareHomeTabController>();
-        controller.getOngoingData();
-        controller.getNearbyData();
+        // final controller = Get.find<HealthCareHomeTabController>();
       },
       child: SmartRefresher(
         enablePullDown: true,
@@ -126,9 +120,8 @@ class _HealthCareHomeTabState extends State<HealthCareHomeTab> {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              buildItem("View users", 'url',
-                  () => context.router.push(const HealthCareUserListRoute())),
               verticalSpacer16,
+              const PanicHomeItem(), 
               buildItem("View drivers", 'url',
                   () => context.router.push(const HealthCareDriverListRoute())),
               verticalSpacer16,

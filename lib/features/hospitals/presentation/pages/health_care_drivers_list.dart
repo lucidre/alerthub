@@ -1,10 +1,10 @@
 import 'package:alerthub/common_libs.dart';
+import 'package:alerthub/features/hospitals/data/data_sources/remote_data_source.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/driver.dart';
+import 'package:alerthub/features/hospitals/data/repositorites/hospitals_repository_impl.dart';
+import 'package:alerthub/features/hospitals/domain/usecases/hospital_service.dart';
 import 'package:alerthub/features/hospitals/presentation/bars/healthcare_driver_information.dart';
-import 'package:alerthub/features/hospitals/presentation/controller/hospital_driver_list_controller.dart';
-import 'package:alerthub/features/user/data/data_sources/remote_data_source.dart';
-import 'package:alerthub/features/user/data/model/user_data/user.dart';
-import 'package:alerthub/features/user/data/repositorites/user_repository_impl.dart';
-import 'package:alerthub/features/user/domain/usecases/user_service.dart';
+import 'package:alerthub/features/hospitals/presentation/controller/hospital_driver_list_controller.dart'; 
 import 'package:alerthub/features/user/presentation/widget/hospital_driver_item.dart';
 
 @RoutePage()
@@ -27,9 +27,9 @@ class _HealthCareDriverListScreenState
     super.initState();
     final controller = Get.put(
       HealthCareDriverListController(
-        UserService(
-          UserRepositoryImpl(
-            UserRemoteDataSource(),
+        HospitalService(
+          HospitalRepositoryImpl(
+            HospitalRemoteDataSource(),
           ),
         ),
       ),
@@ -62,8 +62,20 @@ class _HealthCareDriverListScreenState
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      floatingActionButton: buildFloatingActinoButton(),
       appBar: buildAppBar(),
       body: buildBody(),
+    );
+  }
+
+  buildFloatingActinoButton() {
+    return FloatingActionButton(
+      onPressed: () => context.router.push(DriverAccountSetupRoute()),
+      backgroundColor: blackShade1Color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(space4),
+      ),
+      child: const Icon(Icons.add_rounded),
     );
   }
 
@@ -77,7 +89,7 @@ class _HealthCareDriverListScreenState
                 final refreshController = controller.refreshController;
                 final isLoading = controller.isLoading;
                 final hasError = controller.hasError;
-                final users = controller.users;
+                final users = controller.drivers;
                 return Padding(
                   padding: const EdgeInsets.all(space12),
                   child: SmartRefresher(
@@ -107,7 +119,7 @@ class _HealthCareDriverListScreenState
       padding: const EdgeInsets.all(0),
       itemBuilder: (ctx, index) {
         return HospitalDriverItem(
-          user: User(),
+          user: const Driver(),
           shimmerEnabled: true,
           onPressed: () {},
         );
@@ -117,19 +129,25 @@ class _HealthCareDriverListScreenState
     );
   }
 
-  Widget buildList(List<User> users) {
+  Widget buildList(List<Driver> users) {
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.all(0),
       itemBuilder: (ctx, index) {
         final user = users[index];
         return HospitalDriverItem(
-          user: user,
-          shimmerEnabled: false,
-          onPressed: () => context.showBottomBar(
-            child: HealthCareDriverInformationBar(user: user),
-          ),
-        );
+            user: user,
+            shimmerEnabled: false,
+            onPressed: () async {
+              final result = await context.showBottomBar(
+                child: HealthCareDriverInformationBar(user: user),
+              );
+              if (result is int && result == 1) {
+                context.router.push(
+                  DriverAccountSetupRoute(driver: user),
+                );
+              }
+            });
       },
       physics: const BouncingScrollPhysics(),
       itemCount: users.length,

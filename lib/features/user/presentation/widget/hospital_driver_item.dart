@@ -1,8 +1,8 @@
 import 'package:alerthub/common_libs.dart';
-import 'package:alerthub/features/user/data/model/user_data/user.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/driver.dart';
 
 class HospitalDriverItem extends StatelessWidget {
-  final User user;
+  final Driver user;
   final bool shimmerEnabled;
   final VoidCallback onPressed;
 
@@ -79,7 +79,7 @@ class HospitalDriverItem extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(space4),
             ),
-            child: AppImage(imageUrl: user.imageUrl ?? ''),
+            child: AppImage(imageUrl: user.images ?? ''),
           ).fadeInAndMoveFromBottom(),
           horizontalSpacer12,
           Expanded(
@@ -98,32 +98,15 @@ class HospitalDriverItem extends StatelessWidget {
               ).fadeInAndMoveFromBottom(),
               verticalSpacer8,
               Text(
-                'Phone: ${user.phoneNumber ?? 'Unknown'}',
+                'Phone: ${user.contact ?? 'Unknown'}',
                 style: satoshi500S12,
                 softWrap: true,
               ).fadeInAndMoveFromBottom(),
               verticalSpacer4,
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Country: ${user.country ?? 'Unknown'}',
-                      style: satoshi500S12,
-                      softWrap: true,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(space6),
-                    decoration: BoxDecoration(
-                      color: kGoldShade1,
-                      borderRadius: BorderRadius.circular(space4),
-                    ),
-                    child: Text(
-                      'Pending Review',
-                      style: satoshi500S12.copyWith(color: whiteColor),
-                    ),
-                  ),
-                ],
+              Text(
+                'Password: ${user.password ?? 'Unknown'}',
+                style: satoshi500S12,
+                softWrap: true,
               ).fadeInAndMoveFromBottom(),
             ],
           )),

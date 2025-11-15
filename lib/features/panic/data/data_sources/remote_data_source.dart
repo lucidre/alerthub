@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart';
 import 'package:alerthub/shared/api/server_method.dart';
 
@@ -35,16 +36,11 @@ class PanicRemoteDataSource {
     required bool broadcastToContacts,
   }) async {
     try {
+      final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
       final response = await $post(
-        'panic/toggle',
-        body: {
-          'latitude': latitude,
-          'longitude': longitude,
-          'isOnOrOff': isOnOrOff,
-          'broadcastToCommunity': broadcastToCommunity,
-          'broadcastToProviders': broadcastToProviders,
-          'broadcastToContacts': broadcastToContacts,
-        },
+        'panic/$uid?latitude=$latitude&longitude=$longitude&isOnOrOff=$isOnOrOff&broadcastToCommunity=$broadcastToCommunity&broadcastToProviders=$broadcastToProviders&broadcastToContacts=$broadcastToContacts',
+       
       );
 
       if (response.isError) {

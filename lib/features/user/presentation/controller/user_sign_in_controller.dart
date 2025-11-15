@@ -1,3 +1,4 @@
+import 'package:alerthub/features/user/data/model/account_types.dart';
 import 'package:alerthub/features/user/domain/usecases/user_service.dart';
 import 'package:alerthub/common_libs.dart';
 
@@ -14,6 +15,7 @@ class UserSignInController extends GetxController {
       TextEditingController().obs;
   final Rx<FocusNode> _passwordFocusNode = FocusNode().obs;
   final Rx<GlobalKey<FormState>> _formKey = GlobalKey<FormState>().obs;
+  final _accountType = Rxn<AccountType>();
 
   // Getters
   bool get isHidden => _isHidden.value;
@@ -22,6 +24,7 @@ class UserSignInController extends GetxController {
   TextEditingController get passwordController => _passwordController.value;
   FocusNode get passwordFocusNode => _passwordFocusNode.value;
   GlobalKey<FormState> get formKey => _formKey.value;
+  AccountType? get accountType => _accountType.value;
 
   // Setters
   set isHidden(bool value) => _isHidden.value = value;
@@ -32,7 +35,8 @@ class UserSignInController extends GetxController {
       _passwordController.value = value;
   set passwordFocusNode(FocusNode value) => _passwordFocusNode.value = value;
   set formKey(GlobalKey<FormState> value) => _formKey.value = value;
-
+  set accountType(AccountType? value) => _accountType.value = value;
+ 
   resetFields() {
     emailController.text = '';
     passwordController.text = '';
@@ -44,9 +48,15 @@ class UserSignInController extends GetxController {
     if (!isValid) {
       return Future.error('Kindly fill all fields.');
     }
+
     if (isLoading) {
       return Future.error(
           'Kindly wait till the current operation is complete.');
+    }
+ 
+ 
+    if (accountType == null) {
+      return Future.error('Kindly select your account type to proceed.');
     }
 
     formKey.currentState?.save();

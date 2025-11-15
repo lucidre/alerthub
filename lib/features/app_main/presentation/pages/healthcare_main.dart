@@ -1,6 +1,6 @@
 import 'package:alerthub/features/hospitals/presentation/pages/healthcare_home_tab.dart';
 import 'package:alerthub/features/hospitals/presentation/pages/healthcare_map_tab.dart';
-import 'package:alerthub/features/user/presentation/pages/user_profile_tab.dart';
+import 'package:alerthub/features/user/presentation/pages/hospital_profile_tab.dart';  
 import 'package:alerthub/shared/models/bottom_bar/bottom_bar.dart';
 import 'package:alerthub/shared/widgets/bottom_nav.dart';
 import 'package:alerthub/common_libs.dart';
@@ -20,7 +20,7 @@ class _HealthCareMainScreenState extends State<HealthCareMainScreen> {
   final pages = [
     const HealthCareHomeTab(),
     const HealthCareMapTab(),
-    const UserProfileTab(),
+    const HospitalProfileTab(),
   ];
 
   StreamSubscription<int>? positionStreamSubscription;

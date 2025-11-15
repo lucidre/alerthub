@@ -3,12 +3,13 @@ import 'package:alerthub/features/user/data/model/account_types.dart';
 import 'package:alerthub/features/user/data/model/contacts/contacts.dart';
 import 'package:alerthub/features/user/data/model/user_data/user_data.dart';
 import 'package:alerthub/features/user/domain/repositories/user_repository.dart';
+import 'package:alerthub/features/hospitals/data/model/hospital/hospital_data.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remoteDataSource;
 
   UserRepositoryImpl(this.remoteDataSource);
-
+ 
   @override
   Future<String> deleteUser() async {
     try {
@@ -99,6 +100,16 @@ class UserRepositoryImpl implements UserRepository {
   Future<UserData> getUser() async {
     try {
       final response = await remoteDataSource.getUser();
+      return response;
+    } catch (exception) {
+      return Future.error(exception);
+    }
+  }
+
+  @override
+  Future<HospitalData> getHospital() async {
+    try {
+      final response = await remoteDataSource.getHospital();
       return response;
     } catch (exception) {
       return Future.error(exception);
